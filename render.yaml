@@ -3,6 +3,6 @@ services:
     name: django-render-demo
     env: python
     buildCommand: "pip install -r requirements.txt && python manage.py migrate"
-    startCommand: "gunicorn myproject.wsgi:application"
+    startCommand: "gunicorn pythonbasics.wsgi:application"
     plan: free
     autoDeploy: true
