@@ -1,16 +1,5 @@
 import os
 import dj_database_url
-import time
-import logging
-import socket
-import sys
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-
-# Retry Settings
-MAX_RETRIES = 5  # Retry 5 times before failing
-SLEEP_BETWEEN_RETRIES = 5  # Wait 5 seconds between retries
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -59,24 +48,6 @@ TEMPLATES = [
 
 # Retrieve DATABASE_URL from environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
-
-if DATABASE_URL:
-    try:
-        # Extract the hostname from DATABASE_URL (format: postgres://user:pass@hostname:port/dbname)
-        hostname = DATABASE_URL.split('@')[1].split(':')[0]  # Extracts "dpg-cv8usiq3esus73fhij20-a"
-        logging.info(f"Extracted database hostname: {hostname}")
-
-        # Resolve the IP address
-        ip_address = socket.gethostbyname(hostname)
-        logging.info(f"Resolved {hostname} to IP: {ip_address}")
-
-        # Override the database hostname with the resolved IP
-        DATABASE_URL = DATABASE_URL.replace(hostname, ip_address)
-        logging.info(f"Updated DATABASE_URL with IP: {DATABASE_URL}")
-
-    except Exception as e:
-        logging.warning(f"Failed to resolve hostname: {e}")
-        sys.exit("🚨 Deployment stopped: Unable to resolve database hostname")
 
 # Define DATABASES in Django settings
 DATABASES = {
