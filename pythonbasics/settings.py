@@ -7,7 +7,9 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-secret-key")
 
 DEBUG = True  # Change to True only for local debugging
 
-ALLOWED_HOSTS = ["https://python-basics.onrender.com", "localhost"]
+ALLOWED_HOSTS = [
+    "python-basics.onrender.com",
+    "localhost",]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
