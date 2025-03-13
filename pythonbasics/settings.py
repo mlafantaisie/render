@@ -1,5 +1,9 @@
 import os
 import dj_database_url
+import time
+
+MAX_RETRIES = 5  # Retry 5 times before failing
+SLEEP_BETWEEN_RETRIES = 5  # Wait 5 seconds between retries
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -46,13 +50,17 @@ TEMPLATES = [
     },
 ]
 
-DATABASES = {
-  'default': dj_database_url.config(default=os.getenv('DATABASE_URL'), conn_max_age=600)
-}
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-DATABASES['default']['OPTIONS'] = {
-    'host': os.getenv('DATABASE_URL').split('@')[1].split(':')[0],  # Extract the correct IPv4 host
-}
+for attempt in range(MAX_RETRIES):
+    try:
+        DATABASES = {
+            'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+        }
+        break  # Exit loop if successful
+    except Exception as e:
+        print(f"Database connection failed (attempt {attempt + 1}): {e}")
+        time.sleep(SLEEP_BETWEEN_RETRIES)
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
