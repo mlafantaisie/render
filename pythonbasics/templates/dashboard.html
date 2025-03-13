@@ -2,5 +2,11 @@
 
 {% block content %}
 <h2>Data Dashboard</h2>
-<img src="{{ chart }}" alt="Data Chart">
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% else %}
+    <img src="{{ chart }}" alt="Data Chart">
+{% endif %}
+
 {% endblock %}
