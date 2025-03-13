@@ -16,12 +16,27 @@ def upload_data(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            df = pd.read_csv(request.FILES["file"])  # Read CSV file
-            for index, row in df.iterrows():
-                DataEntry.objects.create(name=row["name"], value=row["value"])
-            return render(request, "upload_success.html")  # Show success page
+            try:
+                # Read the uploaded CSV file
+                df = pd.read_csv(request.FILES["file"])
+
+                # Check if required columns exist
+                required_columns = {"name", "value"}
+                if not required_columns.issubset(df.columns):
+                    return render(request, "upload.html", {"form": form, "error": "Invalid CSV format. Ensure 'name' and 'value' columns exist."})
+
+                # Clean and Save Data
+                for _, row in df.iterrows():
+                    DataEntry.objects.create(name=row["name"], value=row["value"])
+
+                return render(request, "upload_success.html")  # Show success page
+
+            except Exception as e:
+                return render(request, "upload.html", {"form": form, "error": f"Error processing file: {str(e)}"})
+    
     else:
         form = UploadFileForm()
+
     return render(request, "upload.html", {"form": form})
 
 def data_dashboard(request):
