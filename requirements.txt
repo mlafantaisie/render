@@ -6,3 +6,4 @@ whitenoise  # for static files
 pandas
 matplotlib
 numpy
+djangorestframework
