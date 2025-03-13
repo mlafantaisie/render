@@ -3,6 +3,7 @@ import dj_database_url
 import time
 import logging
 import socket
+import sys
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -75,6 +76,7 @@ if DATABASE_URL:
 
     except Exception as e:
         logging.warning(f"Failed to resolve hostname: {e}")
+        sys.exit("🚨 Deployment stopped: Unable to resolve database hostname")
 
 # Define DATABASES in Django settings
 DATABASES = {
