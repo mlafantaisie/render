@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-secret-key")
 
-DEBUG = False  # Change to True only for local debugging
+DEBUG = True  # Change to True only for local debugging
 
 ALLOWED_HOSTS = ["https://python-basics.onrender.com", "localhost"]
 
