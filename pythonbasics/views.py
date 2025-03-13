@@ -40,19 +40,37 @@ def upload_data(request):
     return render(request, "upload.html", {"form": form})
 
 def data_dashboard(request):
-    # Get all data from the database
-    data = DataEntry.objects.all().values("name", "value")
-    df = pd.DataFrame.from_records(data)
+    try:
+        # Get all data from the database
+        data = DataEntry.objects.all().values("name", "value")
+        
+        # Check if data exists
+        if not data:
+            return render(request, "dashboard.html", {"error": "No data available for visualization."})
+        
+        df = pd.DataFrame.from_records(data)
 
-    # Generate a chart
-    plt.figure(figsize=(6, 4))
-    df.plot(kind="bar", x="name", y="value")
+        # Ensure there is at least one valid data row
+        if df.empty:
+            return render(request, "dashboard.html", {"error": "No valid data found."})
 
-    # Convert to image
-    buffer = io.BytesIO()
-    plt.savefig(buffer, format="png")
-    buffer.seek(0)
-    string = base64.b64encode(buffer.read()).decode("utf-8")
-    image_uri = "data:image/png;base64," + string
+        # Generate a chart
+        plt.figure(figsize=(6, 4))
+        df.plot(kind="bar", x="name", y="value")
 
-    return render(request, "dashboard.html", {"chart": image_uri})
+        # Convert to image
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        string = base64.b64encode(buffer.read()).decode("utf-8")
+        image_uri = "data:image/png;base64," + string
+
+        return render(request, "dashboard.html", {"chart": image_uri})
+
+    except Exception as e:
+        # Log the error (optional: print to logs for debugging)
+        print(f"Dashboard error: {e}")
+
+        # Display an error message instead of crashing the server
+        return render(request, "dashboard.html", {"error": "An error occurred while generating the dashboard."})
+
