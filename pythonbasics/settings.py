@@ -47,7 +47,11 @@ TEMPLATES = [
 ]
 
 DATABASES = {
-  'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+  'default': dj_database_url.config(default=os.getenv('DATABASE_URL'), conn_max_age=600)
+}
+
+DATABASES['default']['OPTIONS'] = {
+    'host': os.getenv('DATABASE_URL').split('@')[1].split(':')[0],  # Extract the correct IPv4 host
 }
 
 STATIC_URL = '/static/'
