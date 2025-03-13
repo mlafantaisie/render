@@ -1,7 +1,10 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from django.shortcuts import render
 from .models import DataEntry
 from .forms import UploadFileForm
+import io
+import urllib, base64
 
 def home(request):
     return render(request, "home.html")
@@ -20,3 +23,21 @@ def upload_data(request):
     else:
         form = UploadFileForm()
     return render(request, "upload.html", {"form": form})
+
+def data_dashboard(request):
+    # Get all data from the database
+    data = DataEntry.objects.all().values("name", "value")
+    df = pd.DataFrame.from_records(data)
+
+    # Generate a chart
+    plt.figure(figsize=(6, 4))
+    df.plot(kind="bar", x="name", y="value")
+
+    # Convert to image
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format="png")
+    buffer.seek(0)
+    string = base64.b64encode(buffer.read()).decode("utf-8")
+    image_uri = "data:image/png;base64," + string
+
+    return render(request, "dashboard.html", {"chart": image_uri})
