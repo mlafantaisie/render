@@ -3,3 +3,6 @@ gunicorn
 psycopg2-binary
 dj-database-url
 whitenoise  # for static files
+pandas
+matplotlib
+numpy
