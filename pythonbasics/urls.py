@@ -8,6 +8,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.home, name="home"),
     path("about/", views.about, name="about"),
-    path("upload/", upload_data, name="upload_data"),
-    path("dashboard/", data_dashboard, name="dashboard"),
+    path("upload/", views.upload_data, name="upload_data"),
+    path("dashboard/", views.data_dashboard, name="dashboard"),
 ]
