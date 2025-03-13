@@ -38,7 +38,7 @@ ROOT_URLCONF = "pythonbasics.urls"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Ensure Django can find templates
+        'DIRS': [os.path.join(BASE_DIR, 'pythonbasics', 'templates')],  # Ensure Django can find templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
