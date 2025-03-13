@@ -1,7 +1,12 @@
 import os
 import dj_database_url
 import time
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Retry Settings
 MAX_RETRIES = 5  # Retry 5 times before failing
 SLEEP_BETWEEN_RETRIES = 5  # Wait 5 seconds between retries
 
@@ -51,6 +56,8 @@ TEMPLATES = [
 ]
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+logging.debug(f"Trying to connect to database at {DATABASE_URL}")  # Debugging output
 
 DATABASES = {
     'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
