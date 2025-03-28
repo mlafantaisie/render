@@ -9,7 +9,7 @@ import urllib, base64
 from .accdb_parser import AccdbParser
 
 def home(request):
-   context = {}
+    context = {}
 
     if request.method == 'POST':
         form = UploadAccessDBForm(request.POST, request.FILES)
