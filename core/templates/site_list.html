@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Uploaded Sites</h2>
+<ul>
+  {% for site in sites %}
+    <li>{{ site.site_name }} ({{ site.site_code }})</li>
+  {% empty %}
+    <li>No sites uploaded yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
