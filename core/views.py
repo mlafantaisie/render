@@ -1,8 +1,5 @@
 import os
-import pandas as pd
-import matplotlib.pyplot as plt
 from django.shortcuts import render
-from .models import DataEntry
 from .forms import UploadAccessDBForm
 import io
 import urllib, base64
