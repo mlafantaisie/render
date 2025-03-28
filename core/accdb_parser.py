@@ -17,10 +17,16 @@ class AccdbParser:
             for i in range(0, len(self.binary), self.page_size)
         ]
 
-    def find_text_strings(self, min_length=4):
-        """Extract all printable ASCII strings from the binary."""
-        pattern = re.compile(rb'[\x20-\x7E]{' + str(min_length).encode() + rb',}')
-        return [match.decode('ascii', errors='ignore') for match in pattern.findall(self.binary)]
+    def find_useful_strings(self):
+        import re
+        pattern = re.compile(rb'[\x20-\x7E]{4,40}')  # 4–40 char printable
+        raw_strings = [s.decode('ascii', errors='ignore') for s in pattern.findall(self.binary)]
+    
+        # Apply soft filters: known keywords or very likely identifiers
+        keywords = ['table', 'id', 'name', 'field', 'column', 'database']
+        filtered = [s for s in raw_strings if any(k in s.lower() for k in keywords)]
+    
+        return sorted(set(filtered))  # Deduplicate and sort
 
     def inspect_header(self):
         header = self.binary[:256]
