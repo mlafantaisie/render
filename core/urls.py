@@ -7,8 +7,4 @@ from .views import data_dashboard
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.home, name="home"),
-    path("about/", views.about, name="about"),
-    path('upload/', views.upload_view, name='upload'),
-    path('sites/', views.site_list, name='site_list'),
-    path("dashboard/", views.data_dashboard, name="dashboard"),
 ]
