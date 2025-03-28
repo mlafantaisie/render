@@ -1,1 +1,1 @@
-web: gunicorn pythonbasics.wsgi:application
+web: gunicorn core.wsgi:application
