@@ -1,4 +1,5 @@
 import struct
+import re
 
 class AccdbParser:
     def __init__(self, filepath):
@@ -6,42 +7,53 @@ class AccdbParser:
         self.page_size = 4096
         self.binary = b''
         self.pages = []
+        self.messages = []  # <-- collect status/info here
 
     def read_file(self):
-        with open(self.filepath, 'rb') as f:
-            self.binary = f.read()
+        try:
+            with open(self.filepath, 'rb') as f:
+                self.binary = f.read()
+            self.messages.append(f"Loaded file: {self.filepath} ({len(self.binary)} bytes)")
+        except Exception as e:
+            self.messages.append(f"Error reading file: {e}")
 
     def split_pages(self):
         self.pages = [
             self.binary[i:i+self.page_size]
             for i in range(0, len(self.binary), self.page_size)
         ]
+        self.messages.append(f"Split into {len(self.pages)} pages (page size = {self.page_size} bytes)")
 
     def get_page(self, index):
         if index < len(self.pages):
+            self.messages.append(f"Loaded page {index}")
             return self.pages[index]
+        self.messages.append(f"Page {index} not found")
         return None
 
     def inspect_catalog_page(self):
         page = self.get_page(0)
         if not page:
-            return "Page 0 not found."
+            return []
 
-        # First bytes often contain header or flags
-        header = page[:64]
-
-        # Start scanning entries (very basic version)
         catalog_strings = []
+        pattern = re.compile(rb'[\x20-\x7E]{4,40}')  # printable ASCII
 
-        # Scan the whole page for readable ASCII chunks
-        for i in range(0, len(page) - 8):
-            chunk = page[i:i+32]
-            if b'Table' in chunk or b'Database' in chunk or b'Field' in chunk:
+        self.messages.append("Scanning page 0 for ASCII strings...")
+
+        for i in range(len(page)):
+            match = pattern.match(page[i:i+40])
+            if match:
                 try:
-                    text = chunk.decode('ascii', errors='ignore')
+                    text = match.group().decode('ascii')
                     catalog_strings.append((i, text.strip()))
-                except:
+                except Exception:
                     continue
+
+        if catalog_strings:
+            self.messages.append(f"Found {len(catalog_strings)} text strings on page 0.")
+        else:
+            self.messages.append("No readable strings found on page 0.")
 
         return catalog_strings
 
@@ -51,4 +63,5 @@ class AccdbParser:
 
         return {
             "catalog_preview": self.inspect_catalog_page(),
+            "messages": self.messages
         }
