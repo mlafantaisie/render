@@ -18,11 +18,10 @@
 {% endif %}
 
 {% if results.catalog_preview %}
-  <hr>
-  <h3>Catalog Preview (Page 0):</h3>
+  <h3>Preview from Pages 0–10:</h3>
   <ul>
-    {% for offset, value in results.catalog_preview %}
-      <li><strong>{{ offset }}</strong>: {{ value }}</li>
+    {% for page, offset, value in results.catalog_preview %}
+      <li><strong>Page {{ page }}, offset {{ offset }}</strong>: {{ value }}</li>
     {% endfor %}
   </ul>
 {% endif %}
