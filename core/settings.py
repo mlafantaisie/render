@@ -18,7 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pythonbasics',
+    'core',
 ]
 
 # Whitenoise for serving static files in production
