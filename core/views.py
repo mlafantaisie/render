@@ -16,31 +16,48 @@ def site_list(request):
     sites = Site.objects.all()
     return render(request, 'site_list.html', {'sites': sites})
 
+import os
+from django.shortcuts import render, redirect
+from .forms import UploadAccessDBForm
+from .models import Site
+
 def upload_view(request):
     if request.method == 'POST':
         form = UploadAccessDBForm(request.POST, request.FILES)
         if form.is_valid():
             site_code = form.cleaned_data['site_code']
             file = form.cleaned_data['accdb_file']
+            original_name = file.name.lower()
 
-            # Save the file temporarily
-            upload_path = f"/tmp/{file.name}"
+            # Determine new filename
+            if original_name.endswith('.r5c'):
+                new_filename = f"{site_code}.accdb"
+            elif original_name.endswith('.accdb'):
+                new_filename = file.name
+            else:
+                # Reject unsupported file types
+                form.add_error('accdb_file', 'Unsupported file type. Please upload a .r5c or .accdb file.')
+                return render(request, 'upload.html', {'form': form})
+
+            # Save file to /tmp (or your media directory)
+            upload_path = os.path.join('/tmp', new_filename)
             with open(upload_path, 'wb+') as destination:
                 for chunk in file.chunks():
                     destination.write(chunk)
 
-            # For now: Just create a Site entry as a placeholder
+            # Create site record if not exists
             Site.objects.get_or_create(site_code=site_code, defaults={
                 'site_name': site_code.capitalize(),
-                'description': 'Uploaded via UI',
+                'description': f'Uploaded {new_filename}',
             })
 
-            # TODO: parse the file later
+            # TODO: Process this file into PostgreSQL
             return redirect('site_list')
     else:
         form = UploadAccessDBForm()
 
     return render(request, 'upload.html', {'form': form})
+
 
 def upload_data(request):
     if request.method == "POST":
