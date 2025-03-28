@@ -26,4 +26,14 @@
     {% endfor %}
   </ul>
 {% endif %}
+
+{% if results.messages %}
+  <hr>
+  <h3>Parser Messages:</h3>
+  <ul>
+    {% for msg in results.messages %}
+      <li style="color: {% if 'error' in msg|lower %}red{% else %}black{% endif %};">{{ msg }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 {% endblock %}
