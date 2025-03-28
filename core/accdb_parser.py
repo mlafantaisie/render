@@ -42,5 +42,5 @@ class AccdbParser:
         self.split_pages()
         return {
             "header": self.inspect_header(),
-            "strings": self.find_text_strings()
+            "useful_strings": self.find_useful_strings()
         }
