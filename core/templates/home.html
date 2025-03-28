@@ -17,13 +17,10 @@
   </ul>
 {% endif %}
 
-{% if results %}
-  <hr>
-  <h3>Parsed Info:</h3>
-  <p><strong>Header:</strong> {{ results.header }}</p>
-  <h4>Found Strings:</h4>
+{% if results.useful_strings %}
+  <h4>Likely Table / Field Names:</h4>
   <ul>
-    {% for s in results.strings %}
+    {% for s in results.useful_strings %}
       <li>{{ s }}</li>
     {% endfor %}
   </ul>
