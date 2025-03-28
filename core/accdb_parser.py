@@ -35,27 +35,34 @@ class AccdbParser:
         page = self.get_page(0)
         if not page:
             return []
-
+    
+        self.messages.append("Scanning page 0 for distinct printable ASCII strings...")
+    
+        pattern = re.compile(rb'[\x20-\x7E]{4,40}')  # printable ASCII range, 4–40 chars
+        matches = pattern.finditer(page)
+    
         catalog_strings = []
-        pattern = re.compile(rb'[\x20-\x7E]{4,40}')  # printable ASCII
-
-        self.messages.append("Scanning page 0 for ASCII strings...")
-
-        for i in range(len(page)):
-            match = pattern.match(page[i:i+40])
-            if match:
-                try:
-                    text = match.group().decode('ascii')
-                    catalog_strings.append((i, text.strip()))
-                except Exception:
-                    continue
-
+        seen = set()
+    
+        for match in matches:
+            try:
+                text = match.group().decode('ascii').strip()
+                offset = match.start()
+    
+                # Optional: filter out exact duplicates or repetitive filler
+                if text not in seen and not text.startswith('=') and len(text.strip()) > 3:
+                    seen.add(text)
+                    catalog_strings.append((offset, text))
+            except:
+                continue
+    
         if catalog_strings:
-            self.messages.append(f"Found {len(catalog_strings)} text strings on page 0.")
+            self.messages.append(f"Found {len(catalog_strings)} unique text strings on page 0.")
         else:
-            self.messages.append("No readable strings found on page 0.")
-
+            self.messages.append("No usable strings found on page 0.")
+    
         return catalog_strings
+
 
     def parse(self):
         self.read_file()
