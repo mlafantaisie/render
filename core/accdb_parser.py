@@ -145,10 +145,20 @@ class AccdbParser:
     
         return fields
 
+    def dump_raw_bytes(self, page_index=7, start=1000, end=1100):
+        page = self.get_page(page_index)
+        raw_bytes = page[start:end]
+        hex_dump = ' '.join(f'{b:02X}' for b in raw_bytes)
+        ascii_dump = ''.join(chr(b) if 32 <= b <= 126 else '.' for b in raw_bytes)
+        self.messages.append(f"Hex Dump (Page {page_index}, {start}-{end}):")
+        self.messages.append(hex_dump)
+        self.messages.append(f"ASCII: {ascii_dump}")
+    
     def parse(self):
         self.read_file()
         self.split_pages()
-
+        self.dump_raw_bytes(7, 1000, 1100)
+        
         return {
             "catalog_preview": self.scan_pages_for_strings(0,10),
             "page_7_keywords": self.search_page_for_keywords(7, ['Table', 'ID', 'Name', 'Field']),
