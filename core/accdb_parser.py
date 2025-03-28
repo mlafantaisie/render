@@ -84,6 +84,28 @@ class AccdbParser:
         self.messages.append(f"Scanned pages {start}–{end}. Found {len(results)} unique text strings.")
         return results
 
+    def search_page_for_keywords(self, page_index, keywords):
+        page = self.get_page(page_index)
+        if not page:
+            return []
+    
+        pattern = re.compile(rb'[\x20-\x7E]{3,50}')
+        matches = pattern.finditer(page)
+    
+        found = []
+    
+        for match in matches:
+            try:
+                text = match.group().decode('ascii', errors='ignore').strip()
+                offset = match.start()
+                for keyword in keywords:
+                    if keyword.lower() in text.lower():
+                        found.append((offset, text))
+            except:
+                continue
+    
+        self.messages.append(f"Keyword scan of page {page_index} found {len(found)} matches.")
+        return found
 
     def parse(self):
         self.read_file()
@@ -91,5 +113,6 @@ class AccdbParser:
 
         return {
             "catalog_preview": self.scan_pages_for_strings(0,10),
+            "page_7_keywords": self.search_page_for_keywords(7, ['Table', 'ID', 'Name', 'Field']),
             "messages": self.messages
         }
