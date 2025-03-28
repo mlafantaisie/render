@@ -63,12 +63,33 @@ class AccdbParser:
     
         return catalog_strings
 
+    def scan_pages_for_strings(self, start=0, end=10):
+        results = []
+        pattern = re.compile(rb'[\x20-\x7E]{4,40}')
+        seen = set()
+    
+        for page_index in range(start, min(end, len(self.pages))):
+            page = self.get_page(page_index)
+            matches = pattern.finditer(page)
+            for match in matches:
+                try:
+                    text = match.group().decode('ascii').strip()
+                    offset = match.start()
+                    if text not in seen and len(text) > 3:
+                        seen.add(text)
+                        results.append((page_index, offset, text))
+                except:
+                    continue
+    
+        self.messages.append(f"Scanned pages {start}–{end}. Found {len(results)} unique text strings.")
+        return results
+
 
     def parse(self):
         self.read_file()
         self.split_pages()
 
         return {
-            "catalog_preview": self.inspect_catalog_page(),
+            "catalog_preview": self.scan_pages_for_strings(0,10),
             "messages": self.messages
         }
