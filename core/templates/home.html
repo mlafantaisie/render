@@ -17,12 +17,12 @@
   </ul>
 {% endif %}
 
-{% if results.useful_strings %}
-  <h4>Likely Table / Field Names:</h4>
+{% if results.catalog_preview %}
+  <hr>
+  <h3>Catalog Preview (Page 0):</h3>
   <ul>
-    {% for s in results.useful_strings %}
-      <li>{{ s }}</li>
+    {% for offset, value in results.catalog_preview %}
+      <li><strong>{{ offset }}</strong>: {{ value }}</li>
     {% endfor %}
   </ul>
 {% endif %}
-{% endblock %}
