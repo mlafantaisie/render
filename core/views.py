@@ -12,6 +12,36 @@ def home(request):
 def about(request):
     return render(request, "about.html")
 
+def site_list(request):
+    sites = Site.objects.all()
+    return render(request, 'site_list.html', {'sites': sites})
+
+def upload_view(request):
+    if request.method == 'POST':
+        form = UploadAccessDBForm(request.POST, request.FILES)
+        if form.is_valid():
+            site_code = form.cleaned_data['site_code']
+            file = form.cleaned_data['accdb_file']
+
+            # Save the file temporarily
+            upload_path = f"/tmp/{file.name}"
+            with open(upload_path, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+
+            # For now: Just create a Site entry as a placeholder
+            Site.objects.get_or_create(site_code=site_code, defaults={
+                'site_name': site_code.capitalize(),
+                'description': 'Uploaded via UI',
+            })
+
+            # TODO: parse the file later
+            return redirect('site_list')
+    else:
+        form = UploadAccessDBForm()
+
+    return render(request, 'upload.html', {'form': form})
+
 def upload_data(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
