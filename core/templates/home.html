@@ -1,8 +1,21 @@
-{% extends "base.html" %}
-
-{% block title %}Home{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-    <h2>Home Page</h2>
-    <p>Welcome to my Django web app!</p>
+<h2>Upload ACCDB / R5C</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Upload</button>
+</form>
+
+{% if results %}
+  <hr>
+  <h3>Parsed Info:</h3>
+  <p><strong>Header:</strong> {{ results.header }}</p>
+  <h4>Found Strings:</h4>
+  <ul>
+    {% for s in results.strings %}
+      <li>{{ s }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 {% endblock %}
