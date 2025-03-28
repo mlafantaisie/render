@@ -9,13 +9,7 @@ import urllib, base64
 from .accdb_parser import AccdbParser
 
 def home(request):
-    return render(request, "home.html")
-
-def about(request):
-    return render(request, "about.html")
-
-def upload_view(request):
-    context = {}
+   context = {}
 
     if request.method == 'POST':
         form = UploadAccessDBForm(request.POST, request.FILES)
@@ -43,5 +37,5 @@ def upload_view(request):
         form = UploadAccessDBForm()
 
     context['form'] = form
-    return render(request, 'upload.html', context)
+    return render(request, 'home.html', context)
     
