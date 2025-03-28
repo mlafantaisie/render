@@ -16,11 +16,6 @@ def site_list(request):
     sites = Site.objects.all()
     return render(request, 'site_list.html', {'sites': sites})
 
-import os
-from django.shortcuts import render, redirect
-from .forms import UploadAccessDBForm
-from .models import Site
-
 def upload_view(request):
     if request.method == 'POST':
         form = UploadAccessDBForm(request.POST, request.FILES)
