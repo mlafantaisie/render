@@ -107,44 +107,6 @@ class AccdbParser:
         self.messages.append(f"Keyword scan of page {page_index} found {len(found)} matches.")
         return found
 
-    def parse_table_definition(self, page_index=7):
-        page = self.get_page(page_index)
-        if not page:
-            self.messages.append("Failed to read page for table definition.")
-            return []
-    
-        fields = []
-        field_block_start = 1000  # start near where your repeated blocks appeared
-        max_scan = 1500           # scan range (adjustable)
-    
-        self.messages.append("Scanning Page 7 for field records...")
-    
-        i = field_block_start
-        while i < max_scan:
-            # Try to read length-prefixed field name
-            try:
-                name_len = page[i]
-                if 1 <= name_len <= 30:
-                    raw_name = page[i+1:i+1+name_len]
-                    name = raw_name.decode('ascii', errors='ignore').strip()
-    
-                    # Field type usually comes right after name (adjust offset as needed)
-                    field_type = page[i+1+name_len]
-                    fields.append({
-                        "offset": i,
-                        "name": name,
-                        "type_code": field_type
-                    })
-                    i += name_len + 2  # jump to next possible record
-                else:
-                    i += 1
-            except Exception:
-                i += 1
-    
-        self.messages.append(f"Found {len(fields)} field(s) in table definition.")
-    
-        return fields
-
     def dump_raw_bytes(self, page_index=7, start=1000, end=1100):
         page = self.get_page(page_index)
         raw_bytes = page[start:end]
@@ -153,6 +115,42 @@ class AccdbParser:
         self.messages.append(f"Hex Dump (Page {page_index}, {start}-{end}):")
         self.messages.append(hex_dump)
         self.messages.append(f"ASCII: {ascii_dump}")
+
+    def parse_table_definition(self, page_index=7):
+        page = self.get_page(page_index)
+        if not page:
+            self.messages.append("Failed to read page for table definition.")
+            return []
+    
+        fields = []
+        self.messages.append("Scanning Page 7 for structured field records...")
+    
+        # We'll look at every 16-byte chunk starting around offset 1000
+        for i in range(1000, 1100, 16):
+            try:
+                chunk = page[i:i+16]
+                if len(chunk) < 16:
+                    continue
+    
+                type_code = chunk[3]
+                length = chunk[13]
+    
+                if 1 <= length <= 30:
+                    name_bytes = page[i+14:i+14+length]
+                    name = name_bytes.decode('ascii', errors='ignore').strip()
+    
+                    fields.append({
+                        "offset": i,
+                        "name": name,
+                        "type_code": type_code
+                    })
+            except Exception:
+                continue
+    
+        self.messages.append(f"Found {len(fields)} potential fields based on structure.")
+    
+        return fields
+
     
     def parse(self):
         self.read_file()
