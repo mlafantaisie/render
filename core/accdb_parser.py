@@ -151,6 +151,28 @@ class AccdbParser:
     
         return fields
 
+    def extract_row_near_offset(filepath, offset=217814, window=64):
+    results = []
+
+    try:
+        with open(filepath, "rb") as f:
+            f.seek(offset - window // 2)
+            chunk = f.read(window)
+
+        # Generate hex + ASCII view
+        hex_view = ' '.join(f"{b:02X}" for b in chunk)
+        ascii_view = ''.join(chr(b) if 32 <= b <= 126 else '.' for b in chunk)
+
+        results.append(f"Offset range: {offset - window // 2} to {offset + window // 2}")
+        results.append("Hex View:")
+        results.append(hex_view)
+        results.append("ASCII View:")
+        results.append(ascii_view)
+
+    except Exception as e:
+        results.append(f"Error reading offset: {e}")
+
+    return results
     
     def parse(self):
         self.read_file()
@@ -158,8 +180,10 @@ class AccdbParser:
         self.dump_raw_bytes(7, 1000, 1100)
         
         return {
-            "catalog_preview": self.scan_pages_for_strings(0,10),
-            "page_7_keywords": self.search_page_for_keywords(7, ['Table', 'ID', 'Name', 'Field']),
+            "catalog_preview": self.scan_pages_for_strings(0, 10),
+            "page_7_keywords": self.search_page_for_keywords(7, ['Table', 'ID', 'Number']),
             "table_fields": self.parse_table_definition(7),
+            "table_rows": self.decode_rows_from_page(14),
+            "offset_inspection": extract_row_near_offset(self.filepath, 217814),
             "messages": self.messages
         }
