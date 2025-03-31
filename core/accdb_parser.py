@@ -155,6 +155,8 @@ class AccdbParser:
         results = []
     
         try:
+            offset = int(offset)
+            
             with open(self.filepath, "rb") as f:
                 f.seek(offset - window // 2)
                 chunk = f.read(window)
