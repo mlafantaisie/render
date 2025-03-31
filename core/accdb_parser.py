@@ -180,6 +180,6 @@ class AccdbParser:
         self.dump_raw_bytes(7, 1000, 1100)
         
         return {
-            "offset_inspection": extract_row_near_offset(self.filepath, 217814),
+            "offset_inspection": self.extract_row_near_offset(self.filepath, 217814),
             "messages": self.messages
         }
