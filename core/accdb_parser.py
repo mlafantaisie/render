@@ -176,12 +176,12 @@ class AccdbParser:
     
         return results
     
-    def parse(self, offset=217814):
+    def parse(self, offset=217814, window=64):
         self.read_file()
         self.split_pages()
         self.dump_raw_bytes(7, 1000, 1100)
         
         return {
-            "offset_inspection": self.extract_row_near_offset(offset),
+            "offset_inspection": self.extract_row_near_offset(offset, window),
             "messages": self.messages
         }
