@@ -17,17 +17,14 @@
   </ul>
 {% endif %}
 
-{% if results.table_fields %}
-  <h3>Decoded Table Fields (Page 7):</h3>
-  <ul>
-    {% for field in results.table_fields %}
-      <li>
-        Offset {{ field.offset }}:
-        <strong>{{ field.name }}</strong>
-        (Type Code: {{ field.type_code }})
-      </li>
-    {% endfor %}
-  </ul>
+{% if results.offset_inspection %}
+  <hr>
+  <h3>Offset Analysis Around 217814:</h3>
+  <pre>
+  {% for line in results.offset_inspection %}
+    {{ line }}
+  {% endfor %}
+  </pre>
 {% endif %}
 
 {% if results.messages %}
