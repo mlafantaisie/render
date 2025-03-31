@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Upload or Inspect</h2>
-<p>You can inspect a previously uploaded file by entering an offset, or upload a new file:</p>
+<h2>Upload or Inspect ACCDB / R5C File</h2>
+
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form.as_p }}
@@ -18,23 +18,25 @@
   </ul>
 {% endif %}
 
-{% if results.offset_inspection %}
-  <hr>
-  <h3>Offset Analysis Around 217814:</h3>
-  <pre>
-  {% for line in results.offset_inspection %}
-    {{ line }}
-  {% endfor %}
-  </pre>
-{% endif %}
-
-{% if results.messages %}
-  <hr>
-  <h3>Parser Messages:</h3>
-  <ul>
-    {% for msg in results.messages %}
-      <li style="color: {% if 'error' in msg|lower %}red{% else %}black{% endif %};">{{ msg }}</li>
+{% if results %}
+  {% if results.offset_inspection %}
+    <hr>
+    <h3>Offset Analysis:</h3>
+    <pre>
+    {% for line in results.offset_inspection %}
+      {{ line }}
     {% endfor %}
-  </ul>
+    </pre>
+  {% endif %}
+
+  {% if results.messages %}
+    <hr>
+    <h3>Parser Messages:</h3>
+    <ul>
+      {% for message in results.messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 {% endif %}
 {% endblock %}
