@@ -151,11 +151,11 @@ class AccdbParser:
     
         return fields
 
-    def extract_row_near_offset(filepath, offset=217814, window=64):
+    def extract_row_near_offset(self, offset=217814, window=64):
         results = []
     
         try:
-            with open(filepath, "rb") as f:
+            with open(self.filepath, "rb") as f:
                 f.seek(offset - window // 2)
                 chunk = f.read(window)
     
