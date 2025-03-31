@@ -12,21 +12,15 @@ def home(request):
         form = UploadAccessDBForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.cleaned_data['accdb_file']
-            filename = file.name.lower()
+            offset = form.cleaned_data.get('offset') or 217814  # default if not entered
 
-            if not filename.endswith(('.accdb', '.r5c')):
-                form.add_error('accdb_file', 'Unsupported file type.')
-                return render(request, 'upload.html', {'form': form})
-
-            # Save file
             file_path = os.path.join('/tmp', 'uploaded.accdb')
             with open(file_path, 'wb+') as destination:
                 for chunk in file.chunks():
                     destination.write(chunk)
 
-            # Parse it
             parser = AccdbParser(file_path)
-            results = parser.parse()
+            results = parser.parse(offset=offset)
 
             context['results'] = results
 
