@@ -158,14 +158,18 @@ class AccdbParser:
             offset = int(offset)
             
             with open(self.filepath, "rb") as f:
-                f.seek(offset - window // 2)
+                start = max(0, offset)
+                f.seek(start)
                 chunk = f.read(window)
     
             # Generate hex + ASCII view
             hex_view = ' '.join(f"{b:02X}" for b in chunk)
             ascii_view = ''.join(chr(b) if 32 <= b <= 126 else '.' for b in chunk)
     
-            results.append(f"Offset range: {offset - window // 2} to {offset + window // 2}")
+            if offset < 0:
+                results.append("Offset less than 0: clamping to read start at 0.")
+            else:
+                results.append(f"Offset range: {offset} to {offset + window}")
             results.append("Hex View:")
             results.append(hex_view)
             results.append("ASCII View:")
@@ -176,7 +180,7 @@ class AccdbParser:
     
         return results
     
-    def parse(self, offset=217814, window=64):
+    def parse(self, offset=0, window=64):
         self.read_file()
         self.split_pages()
         self.dump_raw_bytes(7, 1000, 1100)
