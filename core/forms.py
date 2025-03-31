@@ -6,3 +6,5 @@ class UploadAccessDBForm(forms.Form):
         label='Access DB File (.accdb or .r5c)',
         help_text='Upload a Microsoft Access database file for parsing.'
     )
+    offset = forms.IntegerField(label='Inspect Offset (Optional)', required=False, min_value=0)
+
