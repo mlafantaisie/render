@@ -15,3 +15,11 @@
         <strong>{{ article.title }}</strong><br>
         Link: <a href="{{ article.link }}" target="_blank">{{ article.link }}</a><br>
         Published: {{ article.published }}
+      </li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>No articles found in database.</p>
+  {% endif %}
+</body>
+</html>
