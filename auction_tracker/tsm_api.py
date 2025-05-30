@@ -18,8 +18,12 @@ def get_access_token():
     return response.json()['access_token']
 
 def get_moon_guard_ah_id():
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Accept": "application/json"
+    }
     url = "https://realm-api.tradeskillmaster.com/regions/1/realms"
-    response = requests.get(url)
+    response = requests.get(url, headers=headers)
     response.raise_for_status()
 
     realms = response.json()
