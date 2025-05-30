@@ -31,7 +31,7 @@ def refresh():
     inserted = 0
     for item in auction_data:
         if not item.get('itemId'):
-        continue
+            continue
         
         snapshot = AuctionSnapshot(
             item_id=item['itemId'],
