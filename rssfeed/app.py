@@ -6,6 +6,8 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from auth import check_password
 import os
 from dotenv import load_dotenv
+import requests
+from bs4 import BeautifulSoup
 
 load_dotenv()
 
@@ -38,27 +40,57 @@ class Article(db.Model):
     link = db.Column(db.String(300))
     published = db.Column(db.DateTime)
 
-def fetch_feed():
-    import sys  # for logging
+def scrape_site():
+    import sys
+
+    URL = "https://www.wowhead.com/news"
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (compatible; Bot/0.1; +https://example.com/bot)"
+    }
+    KEYWORDS = ["patch", "expansion", "hotfix", "auction", "profession"]
+
     try:
-        feed = feedparser.parse("https://www.wowhead.com/news/rss")
-        print(f"Fetched {len(feed.entries)} entries from WoWhead RSS.", file=sys.stderr)
+        response = requests.get(URL, headers=HEADERS, timeout=10)
+        response.raise_for_status()
     except Exception as e:
-        print(f"ERROR fetching RSS: {e}", file=sys.stderr)
-    print(f"Found {len(feed.entries)} entries", file=sys.stderr)
-    for entry in feed.entries:
-        if any(keyword.lower() in entry.title.lower() for keyword in KEYWORDS):
-            print(f"Matched entry: {entry.title}", file=sys.stderr)
-            if not Article.query.filter_by(link=entry.link).first():
-                published_dt = datetime.datetime(*entry.published_parsed[:6])
+        print(f"Error fetching WoWhead: {e}", file=sys.stderr)
+        return
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    
+    # WoWhead's news list: articles are in divs with class "news-list"
+    news_list = soup.find("div", class_="news-list")
+
+    if not news_list:
+        print("No news-list div found.", file=sys.stderr)
+        return
+
+    articles = news_list.find_all("article")
+
+    new_articles = 0
+
+    for article in articles:
+        title_tag = article.find("h3")
+        if not title_tag:
+            continue
+
+        title = title_tag.get_text(strip=True)
+        link_tag = title_tag.find("a")
+        link = f"https://www.wowhead.com{link_tag['href']}" if link_tag else None
+
+        if any(keyword in title.lower() for keyword in KEYWORDS):
+            if not Article.query.filter_by(link=link).first():
                 new_article = Article(
-                    title=entry.title, 
-                    link=entry.link, 
-                    published=published_dt
+                    title=title,
+                    link=link,
+                    published=datetime.datetime.utcnow()  # no real published date in listing
                 )
                 db.session.add(new_article)
-                print(f"Inserted article: {entry.title}", file=sys.stderr)
+                new_articles += 1
+                print(f"Inserted: {title}", file=sys.stderr)
+
     db.session.commit()
+    print(f"Scraping finished. New articles inserted: {new_articles}", file=sys.stderr)
 
 @app.route('/')
 @login_required
@@ -66,11 +98,11 @@ def index():
     articles = Article.query.order_by(Article.published.desc()).all()
     return render_template('index.html', articles=articles)
 
-@app.route('/refresh')
+@app.route('/refresh', methods=["GET", "POST"])
 @login_required
 def refresh():
-    fetch_feed()
-    return redirect(url_for('index'))
+    scrape_site()
+    return redirect(request.referrer or url_for('index'))
 
 @app.route('/admin')
 @login_required
