@@ -22,7 +22,7 @@ def refresh():
     access_token = get_access_token()
     print("Access token obtained.", file=sys.stderr)
 
-    ah_id = get_moon_guard_ah_id()
+    ah_id = get_moon_guard_ah_id(access_token)
     print(f"Auction House ID for Moon Guard: {ah_id}", file=sys.stderr)
 
     auction_data = get_auction_data(access_token, ah_id)
