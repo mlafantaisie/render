@@ -17,7 +17,7 @@ def get_access_token():
     response.raise_for_status()
     return response.json()['access_token']
 
-def get_moon_guard_ah_id():
+def get_moon_guard_ah_id(access_token):
     headers = {
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json"
@@ -34,6 +34,6 @@ def get_moon_guard_ah_id():
 
 def get_auction_data(access_token, auction_house_id):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"https://pricing-api.tradeskillmaster.com/ah/72", headers=headers)
+    response = requests.get(f"https://pricing-api.tradeskillmaster.com/ah/{auction_house_id}", headers=headers)
     response.raise_for_status()
     return response.json()
