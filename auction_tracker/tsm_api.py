@@ -27,9 +27,9 @@ def get_moon_guard_ah_id(access_token):
     response.raise_for_status()
 
     realms = response.json()
-    for realm in realms['realms']:
-        if realm['realmSlug'] == 'moon-guard':
-            return realm['auctionHouseId']
+    for realm in realms['items']:
+        if realm['name'].lower() == 'moon-guard':
+            return realm['auctionHouses'][0]['auctionHouseId']
     raise Exception("Moon Guard not found")
 
 def get_auction_data(access_token, auction_house_id):
