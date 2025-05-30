@@ -43,6 +43,3 @@ def refresh():
     db.session.commit()
     print(f"Inserted {inserted} items into the database.", file=sys.stderr)
     return "Refreshed!"
-
-with app.app_context():
-    db.create_all()
