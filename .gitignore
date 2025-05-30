@@ -1,5 +1,11 @@
 __pycache__/
 *.pyc
-db.sqlite3
-/static
+*.pyo
+*.pyd
+*.db
 .env
+.env.*
+.vscode/
+.idea/
+*.sqlite3
+*.log
