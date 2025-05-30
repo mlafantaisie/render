@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>WoWhead News Monitor</title>
+</head>
+<body>
+  <h1>WoWhead News Monitor</h1>
+  <p><a href="{{ url_for('logout') }}">Logout</a></p>
+  <ul>
+  {% for article in articles %}
+    <li>
+      <a href="{{ article.link }}" target="_blank">{{ article.title }}</a> 
+      ({{ article.published.strftime('%Y-%m-%d') }})
+    </li>
+  {% endfor %}
+  </ul>
+</body>
+</html>
