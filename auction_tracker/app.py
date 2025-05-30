@@ -26,7 +26,7 @@ def refresh():
     print(f"Auction House ID for Moon Guard: {ah_id}", file=sys.stderr)
 
     auction_data = get_auction_data(access_token, ah_id)
-    print(f"Number of items received: {len(auction_data['items'])}", file=sys.stderr)
+    print(f"Number of items received: {len(auction_data)}", file=sys.stderr)
 
     inserted = 0
     for item in auction_data['items']:
