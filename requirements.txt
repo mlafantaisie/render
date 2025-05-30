@@ -1,6 +1,7 @@
 Django
 gunicorn
 psycopg2-binary
+python-dotenv
 dj-database-url
 whitenoise
 Flask==2.2.5
