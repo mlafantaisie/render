@@ -44,3 +44,4 @@ def refresh():
     print(f"Inserted {inserted} items into the database.", file=sys.stderr)
     return "Refreshed!"
 
+db.create_all()
