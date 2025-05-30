@@ -18,7 +18,7 @@ def get_access_token():
     return response.json()['access_token']
 
 def get_moon_guard_ah_id():
-    url = "https://realm-api.tradeskillmaster.com/region/1/realms?gameVersion=retail"
+    url = "https://realm-api.tradeskillmaster.com/realms"
     response = requests.get(url)
     response.raise_for_status()
 
