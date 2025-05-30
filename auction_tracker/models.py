@@ -11,3 +11,8 @@ class AuctionSnapshot(db.Model):
     market_value = db.Column(db.BigInteger, nullable=False)
     historical = db.Column(db.BigInteger, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+class Item(db.Model):
+    __tablename__ = 'items'
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String, nullable=False)
