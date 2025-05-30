@@ -24,7 +24,7 @@ def get_moon_guard_ah_id(access_token):
         "Content-Type": "application/json"
     }
     
-    url = "https://api.tradeskillmaster.com/v1/region/1/realms?version=retail"
+    url = "https://api.tradeskillmaster.com/v1/region/1/realms?gameVersion=retail"
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     
