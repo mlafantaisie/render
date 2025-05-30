@@ -40,7 +40,11 @@ class Article(db.Model):
 
 def fetch_feed():
     import sys  # for logging
-    feed = feedparser.parse("https://www.wowhead.com/news/rss")
+    try:
+        feed = feedparser.parse("https://www.wowhead.com/news/rss")
+        print(f"Fetched {len(feed.entries)} entries from WoWhead RSS.", file=sys.stderr)
+    except Exception as e:
+        print(f"ERROR fetching RSS: {e}", file=sys.stderr)
     print(f"Found {len(feed.entries)} entries", file=sys.stderr)
     for entry in feed.entries:
         if any(keyword.lower() in entry.title.lower() for keyword in KEYWORDS):
