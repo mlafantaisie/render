@@ -30,6 +30,6 @@ def get_moon_guard_ah_id():
 
 def get_auction_data(access_token, auction_house_id):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"https://api.tradeskillmaster.com/v1/ah/72", headers=headers)
+    response = requests.get(f"https://pricing-api.tradeskillmaster.com/ah/72", headers=headers)
     response.raise_for_status()
     return response.json()
