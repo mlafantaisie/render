@@ -87,9 +87,3 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    fetch_feed()
-    app.run(debug=True)
