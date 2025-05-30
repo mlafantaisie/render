@@ -22,8 +22,11 @@ def get_moon_guard_ah_id(access_token):
         "Authorization": f"Bearer {access_token}",
         "Accept": "application/json"
     }
-    response = requests.get("https://api.tradeskillmaster.com/v1/region/1/realms", headers=headers)
+    
+    url = "https://api.tradeskillmaster.com/v1/region/1/realms?version=retail"
+    response = requests.get(url, headers=headers)
     response.raise_for_status()
+    
     realms = response.json()
     for realm in realms['realms']:
         if realm['realmSlug'] == 'moon-guard':
