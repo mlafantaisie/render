@@ -29,7 +29,7 @@ def refresh():
     print(f"Number of items received: {len(auction_data)}", file=sys.stderr)
 
     inserted = 0
-    for item in auction_data['items']:
+    for item in auction_data:
         snapshot = AuctionSnapshot(
             item_id=item['itemId'],
             quantity=item['quantity'],
