@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Database Admin</title>
+</head>
+<body>
+  <h1>Database Contents</h1>
+  <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+
+  {% if articles %}
+    <ul>
+    {% for article in articles %}
+      <li>
+        <strong>{{ article.title }}</strong><br>
+        Link: <a href="{{ article.link }}" target="_blank">{{ article.link }}</a><br>
+        Published: {{ article.published
