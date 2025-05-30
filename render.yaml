@@ -4,16 +4,16 @@ services:
     env: python
     plan: free
     autoDeploy: true
-    buildCommand: "pip install -r requirements.txt && python manage.py migrate"
+    rootDir: core
+    buildCommand: "pip install -r ../requirements.txt && python ../manage.py migrate"
     startCommand: "gunicorn core.wsgi:application"
-    rootDir: core  # Subfolder for Django app
 
   - type: web
-    name: wowhead-reader
+    name: rssfeed
     env: docker
     plan: free
     autoDeploy: true
-    rootDir: wowhead-reader
+    rootDir: rssfeed
     envVars:
       - key: SECRET_KEY
         sync: false
@@ -23,7 +23,7 @@ services:
         sync: false
 
 cronJobs:
-  - name: refresh-wowhead-news
+  - name: refresh-rssfeed
     schedule: "@every 6h"
     path: "/refresh"
-    serviceName: wowhead-reader
+    serviceName: rssfeed
