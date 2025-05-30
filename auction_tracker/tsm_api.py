@@ -18,7 +18,7 @@ def get_access_token():
     return response.json()['access_token']
 
 def get_moon_guard_ah_id():
-    url = "https://realm-api.tradeskillmaster.com/realms/1/realms"
+    url = "https://realm-api.tradeskillmaster.com/region/1/realms"
     response = requests.get(url)
     response.raise_for_status()
 
@@ -30,6 +30,6 @@ def get_moon_guard_ah_id():
 
 def get_auction_data(access_token, auction_house_id):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"https://api.tradeskillmaster.com/v1/ah/{auction_house_id}", headers=headers)
+    response = requests.get(f"https://api.tradeskillmaster.com/v1/ah/72", headers=headers)
     response.raise_for_status()
     return response.json()
