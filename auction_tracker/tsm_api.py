@@ -20,7 +20,8 @@ def get_access_token():
 def get_moon_guard_ah_id(access_token):
     headers = {
         "Authorization": f"Bearer {access_token}",
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "Content-Type": "application/json"
     }
     
     url = "https://api.tradeskillmaster.com/v1/region/1/realms?version=retail"
@@ -32,6 +33,7 @@ def get_moon_guard_ah_id(access_token):
         if realm['realmSlug'] == 'moon-guard':
             return realm['auctionHouseId']
     raise Exception("Moon Guard not found")
+
 
 def get_auction_data(access_token, auction_house_id):
     headers = {"Authorization": f"Bearer {access_token}"}
