@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: wowhead-news-reader
+    env: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: SECRET_KEY
+        value: "your_secret_key_here"
+      - key: LOGIN_USERNAME
+        value: "your_username_here"
+      - key: LOGIN_PASSWORD
+        value: "your_password_here"
+
+cronJobs:
+  - name: refresh-news
+    schedule: "@every 6h"
+    path: "/refresh"
