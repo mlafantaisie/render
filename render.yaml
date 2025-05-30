@@ -6,7 +6,7 @@ services:
     autoDeploy: true
     buildCommand: "pip install -r requirements.txt && python manage.py migrate"
     startCommand: "gunicorn core.wsgi:application"
-    rootDir: core  # or whatever subfolder your Django app lives in
+    rootDir: core  # Subfolder for Django app
 
   - type: web
     name: wowhead-reader
