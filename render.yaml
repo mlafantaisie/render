@@ -1,31 +1,22 @@
 services:
   - type: web
-    name: core
+    name: auction-tracker
     env: python
     plan: free
     autoDeploy: true
-    rootDir: core
-    buildCommand: "pip install --upgrade pip && pip install -r ../requirements.txt"
-    startCommand: "python manage.py makemigrations core && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py shell -c \"from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='admin').exists() or User.objects.create_superuser('admin', 'admin@example.com', 'your_secure_password')\" && gunicorn core.wsgi:application"
-
-  - type: web
-    name: rssfeed
-    env: docker
-    plan: free
-    autoDeploy: true
-    rootDir: rssfeed
+    rootDir: auction_tracker
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app"
     envVars:
       - key: SECRET_KEY
         sync: false
-      - key: LOGIN_USERNAME
-        sync: false
-      - key: LOGIN_PASSWORD
-        sync: false
       - key: DATABASE_URL
+        sync: false
+      - key: TSM_API_KEY
         sync: false
 
 cronJobs:
-  - name: refresh-rssfeed
+  - name: refresh-auction-tracker
     schedule: "@every 6h"
     path: "/refresh"
-    serviceName: rssfeed
+    serviceName: auction-tracker
