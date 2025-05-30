@@ -2,7 +2,28 @@ services:
   - type: web
     name: core
     env: python
-    buildCommand: "pip install -r requirements.txt && python manage.py migrate"
-    startCommand: "gunicorn core.wsgi:application"
     plan: free
     autoDeploy: true
+    buildCommand: "pip install -r requirements.txt && python manage.py migrate"
+    startCommand: "gunicorn core.wsgi:application"
+    rootDir: core  # or whatever subfolder your Django app lives in
+
+  - type: web
+    name: wowhead-reader
+    env: docker
+    plan: free
+    autoDeploy: true
+    rootDir: wowhead-reader
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: LOGIN_USERNAME
+        sync: false
+      - key: LOGIN_PASSWORD
+        sync: false
+
+cronJobs:
+  - name: refresh-wowhead-news
+    schedule: "@every 6h"
+    path: "/refresh"
+    serviceName: wowhead-reader
