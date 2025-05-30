@@ -68,6 +68,12 @@ def refresh():
     fetch_feed()
     return redirect(url_for('index'))
 
+@app.route('/admin')
+@login_required
+def admin():
+    articles = Article.query.order_by(Article.published.desc()).all()
+    return render_template('admin.html', articles=articles)
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
