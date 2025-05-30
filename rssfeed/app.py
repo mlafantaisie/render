@@ -39,9 +39,12 @@ class Article(db.Model):
     published = db.Column(db.DateTime)
 
 def fetch_feed():
+    import sys  # for logging
     feed = feedparser.parse("https://www.wowhead.com/news/rss")
+    print(f"Found {len(feed.entries)} entries", file=sys.stderr)
     for entry in feed.entries:
         if any(keyword.lower() in entry.title.lower() for keyword in KEYWORDS):
+            print(f"Matched entry: {entry.title}", file=sys.stderr)
             if not Article.query.filter_by(link=entry.link).first():
                 published_dt = datetime.datetime(*entry.published_parsed[:6])
                 new_article = Article(
@@ -50,6 +53,7 @@ def fetch_feed():
                     published=published_dt
                 )
                 db.session.add(new_article)
+                print(f"Inserted article: {entry.title}", file=sys.stderr)
     db.session.commit()
 
 @app.route('/')
