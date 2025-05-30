@@ -15,11 +15,21 @@ def index():
     return render_template("index.html", snapshots=recent)
 
 @app.route('/refresh')
+@app.route('/refresh')
 def refresh():
-    access_token = get_access_token()
-    ah_id = get_moon_guard_ah_id(access_token)
-    auction_data = get_auction_data(access_token, ah_id)
+    import sys
+    print("Refreshing Auction House data...", file=sys.stderr)
 
+    access_token = get_access_token()
+    print("Access token obtained.", file=sys.stderr)
+
+    ah_id = get_moon_guard_ah_id(access_token)
+    print(f"Auction House ID for Moon Guard: {ah_id}", file=sys.stderr)
+
+    auction_data = get_auction_data(access_token, ah_id)
+    print(f"Number of items received: {len(auction_data['items'])}", file=sys.stderr)
+
+    inserted = 0
     for item in auction_data['items']:
         snapshot = AuctionSnapshot(
             item_id=item['itemId'],
@@ -29,6 +39,9 @@ def refresh():
             historical=item['historical']
         )
         db.session.add(snapshot)
+        inserted += 1
 
     db.session.commit()
+    print(f"Inserted {inserted} items into the database.", file=sys.stderr)
     return "Refreshed!"
+
