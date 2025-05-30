@@ -15,7 +15,6 @@ def index():
     return render_template("index.html", snapshots=recent)
 
 @app.route('/refresh')
-@app.route('/refresh')
 def refresh():
     import sys
     print("Refreshing Auction House data...", file=sys.stderr)
