@@ -15,4 +15,5 @@ class AuctionSnapshot(db.Model):
 class Item(db.Model):
     __tablename__ = 'items'
     id = db.Column(db.BigInteger, primary_key=True)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=True)
+    last_attempt = db.Column(db.DateTime, nullable=True)
