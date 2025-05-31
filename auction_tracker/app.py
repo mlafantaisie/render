@@ -74,6 +74,3 @@ def enrich_items():
 
     db.session.commit()
     return f"Enrichment complete: {new_items} new items loaded"
-
-with app.app_context():
-    db.create_all()
