@@ -1,3 +1,5 @@
+import sqlalchemy
+from sqlalchemy import text
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -10,6 +12,20 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "supersecretkey")
 db.init_app(app)
+
+with app.app_context():
+    # Connect directly to DB
+    connection = db.engine.connect()
+    try:
+        # Attempt to add the column; ignore if exists
+        connection.execute(text("""
+            ALTER TABLE items ADD COLUMN IF NOT EXISTS last_attempt TIMESTAMP;
+        """))
+        print("✅ last_attempt column ensured")
+    except Exception as e:
+        print(f"⚠ Failed to alter table: {e}")
+    finally:
+        connection.close()
 
 @app.route('/')
 def index():
