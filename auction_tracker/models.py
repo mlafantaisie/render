@@ -1,11 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import BIGINT
 from datetime import datetime
 
 db = SQLAlchemy()
 
 class AuctionSnapshot(db.Model):
+    __tablename__ = 'auction_snapshot'
     id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, nullable=False)
+    item_id = db.Column(db.BigInteger, nullable=False)
     quantity = db.Column(db.BigInteger, nullable=False)
     min_price = db.Column(db.BigInteger, nullable=False)
     market_value = db.Column(db.BigInteger, nullable=False)
@@ -16,4 +18,4 @@ class Item(db.Model):
     __tablename__ = 'items'
     id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String, nullable=True)
-    last_attempt = db.Column(db.DateTime, nullable=True)
+    last_attempt = db.Column(db.DateTime, nullable=True)  # Optional tracking
