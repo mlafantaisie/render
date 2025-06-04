@@ -1,3 +1,4 @@
+from app.db import metadata
 from sqlalchemy import Table, Column, Integer, String, Float, DateTime, MetaData, BigInteger, ForeignKey, Index
 from datetime import datetime
 
