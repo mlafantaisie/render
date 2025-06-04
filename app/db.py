@@ -4,10 +4,10 @@ import os
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-DATABASE_URL = "postgresql://" + DATABASE_URL
-
 if DATABASE_URL.startswith("postgresql+asyncpg://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://", 1)
+else
+    DATABASE_URL = "postgresql://" + DATABASE_URL
 
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
