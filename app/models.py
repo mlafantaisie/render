@@ -33,5 +33,6 @@ snapshot_sessions = Table(
 )
 
 # Add useful indexes for faster querying later
-Index("ix_snapshot_item", auction_snapshots.c.item_id)
-Index("ix_snapshot_scanned_at", auction_snapshots.c.scanned_at)
+Index("ix_snapshot_sessions_realm", snapshot_sessions.c.realm_id)
+Index("ix_auction_snapshots_item", auction_snapshots.c.item_id)
+Index("ix_auction_snapshots_snapshot", auction_snapshots.c.snapshot_id)
