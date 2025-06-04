@@ -1,22 +1,13 @@
 services:
   - type: web
-    name: auction-tracker
+    name: wow-ah-tracker
     env: python
-    plan: free
-    autoDeploy: true
-    rootDir: auction_tracker
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT"
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
     envVars:
-      - key: SECRET_KEY
-        sync: false
       - key: DATABASE_URL
-        sync: false
-      - key: TSM_API_KEY
-        sync: false
-
-cronJobs:
-  - name: refresh-auction-tracker
-    schedule: "@every 6h"
-    path: "/refresh"
-    serviceName: auction-tracker
+        fromDatabase:
+          name: your-db-name
+          property: connectionString
+databases:
+  - name: your-db-name
