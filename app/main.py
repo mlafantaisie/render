@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.templating import Jinja2Templates
 from app.auth import router as auth_router
-from app.db import database
+from app.db import database, engine
 from app.blizz_api import get_access_token, fetch_auction_data
 
 app = FastAPI()
@@ -14,7 +14,9 @@ app.include_router(auth_router)
 
 @app.on_event("startup")
 async def startup():
+    # Connect and create tables
     await database.connect()
+    metadata.create_all(engine)  # THIS will create tables if they don't exist
 
 @app.on_event("shutdown")
 async def shutdown():
