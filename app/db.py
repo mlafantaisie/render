@@ -10,6 +10,8 @@ if DATABASE_URL.startswith("postgresql+asyncpg://"):
 database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
 
+print(DATABASE_URL)
+
 engine = sqlalchemy.create_engine(
     DATABASE_URL,
     echo=True
