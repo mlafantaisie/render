@@ -1,8 +1,6 @@
 from app.db import metadata
-from sqlalchemy import Table, Column, Integer, String, Float, DateTime, MetaData, BigInteger, ForeignKey, Index
+from sqlalchemy import Table, Column, Integer, String, Float, DateTime, BigInteger, ForeignKey, Index
 from datetime import datetime
-
-metadata = MetaData()
 
 users = Table(
     "users",
@@ -33,7 +31,6 @@ snapshot_sessions = Table(
     Column("scanned_at", DateTime, default=datetime.utcnow),
 )
 
-# Add useful indexes for faster querying later
 Index("ix_snapshot_sessions_realm", snapshot_sessions.c.realm_id)
 Index("ix_auction_snapshots_item", auction_snapshots.c.item_id)
 Index("ix_auction_snapshots_snapshot", auction_snapshots.c.snapshot_id)
