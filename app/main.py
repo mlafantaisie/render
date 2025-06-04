@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, Form
 from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.templating import Jinja2Templates
+
 from app.auth import router as auth_router
-from app.db import database, engine
-from app.blizz_api import get_access_token, fetch_auction_data
+from app.db import database, engine, metadata
+from app.snapshots import take_snapshot  # <-- Import your snapshot logic here
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="your_secret_key")
@@ -16,7 +17,7 @@ app.include_router(auth_router)
 async def startup():
     # Connect and create tables
     await database.connect()
-    metadata.create_all(engine)  # THIS will create tables if they don't exist
+    metadata.create_all(engine)
 
 @app.on_event("shutdown")
 async def shutdown():
@@ -31,8 +32,7 @@ async def dashboard(request: Request):
 
 @app.get("/realm/{realm_id}", response_class=HTMLResponse)
 async def realm_snapshots(request: Request, realm_id: int):
-    # Get latest snapshot
-    query = f"""
+    query = """
         SELECT id, scanned_at FROM snapshot_sessions 
         WHERE realm_id = :realm_id ORDER BY scanned_at DESC LIMIT 1
     """
@@ -40,7 +40,7 @@ async def realm_snapshots(request: Request, realm_id: int):
     if not snapshot:
         return HTMLResponse("No snapshots found", status_code=404)
 
-    auction_query = f"""
+    auction_query = """
         SELECT * FROM auction_snapshots
         WHERE snapshot_id = :snapshot_id LIMIT 100
     """
@@ -58,3 +58,9 @@ async def snapshots(request: Request):
     query = "SELECT realm_id, COUNT(*) as count FROM snapshot_sessions GROUP BY realm_id"
     rows = await database.fetch_all(query)
     return templates.TemplateResponse("snapshots.html", {"request": request, "realms": rows})
+
+# New route to take a snapshot manually
+@app.post("/snapshot")
+async def snapshot_post(request: Request, realm_id: int = Form(...)):
+    await take_snapshot(realm_id)
+    return HTMLResponse(f"Snapshot taken for realm {realm_id}", status_code=200)
