@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Realm {{ realm_id }} Snapshot</title></head>
+<body>
+  <h2>Realm {{ realm_id }} — Snapshot from {{ snapshot.scanned_at }}</h2>
+  <table>
+    <tr><th>Item ID</th><th>Quantity</th><th>Unit Price</th><th>Buyout</th><th>Time Left</th></tr>
+    {% for auction in auctions %}
+      <tr>
+        <td>{{ auction.item_id }}</td>
+        <td>{{ auction.quantity }}</td>
+        <td>{{ auction.unit_price / 10000 }}g</td>
+        <td>{{ auction.buyout / 10000 }}g</td>
+        <td>{{ auction.time_left }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
