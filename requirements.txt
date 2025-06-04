@@ -6,3 +6,4 @@ asyncpg
 sqlalchemy
 python-dotenv
 httpx
+itsdangerous
