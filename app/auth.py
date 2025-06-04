@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import RedirectResponse
-from app.models import database, users
+from app.models import users
+from app.db import database
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 import hashlib
