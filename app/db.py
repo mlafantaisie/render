@@ -12,5 +12,5 @@ metadata = sqlalchemy.MetaData()
 
 engine = sqlalchemy.create_engine(
     DATABASE_URL,
-    connect_args={"sslmode": "require"}
+    echo=True}
 )
