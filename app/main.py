@@ -6,7 +6,7 @@ from starlette.templating import Jinja2Templates
 
 from app.auth import router as auth_router
 from app.db import database, engine, metadata
-from app.models import users, auction_snapshots, snapshot_sessions
+from app import models
 from app.snapshots import take_snapshot
 
 app = FastAPI()
