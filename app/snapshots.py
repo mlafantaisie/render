@@ -1,3 +1,8 @@
+from app.db import database
+from app.models import snapshot_sessions, auction_snapshots
+from app.blizz_api import get_access_token, fetch_auction_data
+
+# Your existing save_snapshot stays
 async def save_snapshot(realm_id, auctions):
     # Create snapshot session
     snapshot_query = snapshot_sessions.insert().values(
@@ -22,3 +27,10 @@ async def save_snapshot(realm_id, auctions):
     async with database.transaction():
         for query in query_list:
             await database.execute(query)
+
+# This is the orchestration function you will call from main.py
+async def take_snapshot(realm_id):
+    token = await get_access_token()
+    data = await fetch_auction_data(realm_id, token)
+    auctions = data.get('auctions', [])
+    await save_snapshot(realm_id, auctions)
