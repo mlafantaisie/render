@@ -18,7 +18,6 @@ app.include_router(auth_router)
 
 @app.on_event("startup")
 async def startup():
-    # Connect and create tables
     await database.connect()
 
 @app.on_event("shutdown")
