@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, Form
+from fastapi import FastAPI, Request, Depends, Form, StaticFiles
 from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.templating import Jinja2Templates
@@ -6,9 +6,10 @@ from starlette.templating import Jinja2Templates
 from app.auth import router as auth_router
 from app.db import database, engine, metadata
 from app.models import users, auction_snapshots, snapshot_sessions
-from app.snapshots import take_snapshot  # <-- Import your snapshot logic here
+from app.snapshots import take_snapshot
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.add_middleware(SessionMiddleware, secret_key="your_secret_key")
 templates = Jinja2Templates(directory="app/templates")
 
