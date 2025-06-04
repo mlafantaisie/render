@@ -1,10 +1,8 @@
-Django
-gunicorn==23.0.0
-psycopg2-binary
+fastapi
+uvicorn
+jinja2
+databases
+asyncpg
+sqlalchemy
 python-dotenv
-dj-database-url
-whitenoise
-Flask==2.2.5
-feedparser==6.0.11
-Flask-SQLAlchemy==3.1.1
-Flask-Login==0.6.3
+httpx
