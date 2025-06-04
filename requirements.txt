@@ -8,3 +8,4 @@ python-dotenv
 httpx
 itsdangerous
 psycopg2
+python-multipart
