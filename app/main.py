@@ -24,6 +24,10 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard(request: Request):
     user = request.session.get("user")
