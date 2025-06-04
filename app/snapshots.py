@@ -1,5 +1,5 @@
 from app.db import database
-from app.models import snapshot_sessions, auction_snapshots
+from app.models import users, auction_snapshots, snapshot_sessions
 from app.blizz_api import get_access_token, fetch_auction_data
 
 # Your existing save_snapshot stays
