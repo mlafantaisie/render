@@ -29,10 +29,8 @@ async def dashboard(request: Request):
         return HTMLResponse("Unauthorized", status_code=401)
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
-@app.post("/snapshot")
-async def snapshot(realm_id: int, request: Request):
-    access_token = await get_access_token()
-    data = await fetch_auction_data(realm_id, access_token)
-    # Process or save 'data' to DB later
-    return {"status": "success", "auction_count": len(data.get('auctions', []))}
-
+@app.get("/snapshots", response_class=HTMLResponse)
+async def snapshots(request: Request):
+    query = "SELECT realm_id, COUNT(*) as count FROM snapshot_sessions GROUP BY realm_id"
+    rows = await database.fetch_all(query)
+    return templates.TemplateResponse("snapshots.html", {"request": request, "realms": rows})
