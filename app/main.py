@@ -51,7 +51,7 @@ async def realm_snapshots(request: Request, realm_id: int):
 
     auction_query = """
         SELECT * FROM auction_snapshots
-        WHERE snapshot_id = :snapshot_id LIMIT 100
+        WHERE snapshot_id = :snapshot_id
     """
     auctions = await database.fetch_all(auction_query, values={"snapshot_id": snapshot.id})
     
