@@ -84,7 +84,11 @@ async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
 async def snapshots(request: Request):
     query = "SELECT realm_id, COUNT(*) as count FROM snapshot_sessions GROUP BY realm_id"
     rows = await database.fetch_all(query)
-    return templates.TemplateResponse("snapshots.html", {"request": request, "realms": rows})
+
+    # Convert rows to list of dicts for easy Jinja2 access
+    realms = [dict(row) for row in rows]
+
+    return templates.TemplateResponse("snapshots.html", {"request": request, "realms": realms})
 
 # New route to take a snapshot manually
 @app.post("/snapshot")
