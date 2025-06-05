@@ -89,10 +89,15 @@ async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
 
 @app.get("/snapshots", response_class=HTMLResponse)
 async def snapshots(request: Request):
-    query = "SELECT realm_id, COUNT(*) as count FROM snapshot_sessions GROUP BY realm_id"
+    query = """
+        SELECT s.realm_id, s.scanned_at, r.realm_name
+        FROM snapshot_sessions s
+        JOIN realms r ON s.realm_id = r.realm_id
+        ORDER BY r.realm_name ASC
+    """
     rows = await database.fetch_all(query)
 
-    # Convert rows to list of dicts for easy Jinja2 access
+    # Convert to dicts for clean Jinja access
     realms = [dict(row) for row in rows]
 
     return templates.TemplateResponse("snapshots.html", {"request": request, "realms": realms})
