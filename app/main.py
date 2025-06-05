@@ -13,7 +13,7 @@ from app.snapshots import take_snapshot
 from app.utils import format_price
 from app.pagination import get_pagination_window
 from app.auth import require_admin
-from app.blizz_realms import update_realms_in_db
+from app.blizz_api import update_realms_in_db
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
