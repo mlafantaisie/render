@@ -2,14 +2,12 @@ import os
 import httpx
 from app.db import database
 from app.models import realms
-import asyncio
 
 BLIZZ_CLIENT_ID = os.getenv("BLIZZ_CLIENT_ID")
 BLIZZ_CLIENT_SECRET = os.getenv("BLIZZ_CLIENT_SECRET")
 
 TOKEN_URL = "https://oauth.battle.net/token"
 CONNECTED_REALM_INDEX_URL = "https://us.api.blizzard.com/data/wow/connected-realm/index?namespace=dynamic-us&locale=en_US"
-CONNECTED_REALM_DETAIL_URL = "https://us.api.blizzard.com/data/wow/connected-realm/{id}?namespace=dynamic-us&locale=en_US"
 
 async def get_access_token():
     async with httpx.AsyncClient() as client:
@@ -28,20 +26,20 @@ async def fetch_connected_realm_index(token):
         response.raise_for_status()
         return response.json()["connected_realms"]
 
-async def fetch_connected_realm_detail(connected_realm_url, token):
+async def fetch_connected_realm_detail(url, token):
     headers = {"Authorization": f"Bearer {token}"}
     async with httpx.AsyncClient() as client:
-        response = await client.get(connected_realm_url, headers=headers)
+        response = await client.get(url, headers=headers)
         response.raise_for_status()
         return response.json()
 
-async def upsert_realm(connected_realm_id, realm_name):
+async def upsert_realm(realm_id, realm_name):
     query = """
         INSERT INTO realms (realm_id, realm_name)
         VALUES (:realm_id, :realm_name)
         ON CONFLICT (realm_id) DO UPDATE SET realm_name = :realm_name
     """
-    values = {"realm_id": connected_realm_id, "realm_name": realm_name}
+    values = {"realm_id": realm_id, "realm_name": realm_name}
     await database.execute(query, values)
 
 async def update_realms_in_db():
@@ -51,10 +49,8 @@ async def update_realms_in_db():
     for realm_entry in connected_realms:
         connected_realm_url = realm_entry["href"]
         connected_realm_data = await fetch_connected_realm_detail(connected_realm_url, token)
-
         connected_realm_id = connected_realm_data["id"]
         first_realm = connected_realm_data["realms"][0]
-        realm_name = first_realm["name"]["en_US"]  # critical fix from earlier
-
+        realm_name = first_realm["name"]["en_US"]
         await upsert_realm(connected_realm_id, realm_name)
         print(f"Updated connected realm {connected_realm_id}: {realm_name}")
