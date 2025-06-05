@@ -4,7 +4,6 @@ from app.models import auction_snapshots, snapshot_sessions
 from app.blizz_api import get_access_token, fetch_auction_data
 
 async def save_snapshot(realm_id, auctions):
-    # Upsert into snapshot_sessions (overwrite any previous session for realm)
     snapshot_query = """
         INSERT INTO snapshot_sessions (realm_id, scanned_at)
         VALUES (:realm_id, :scanned_at)
@@ -14,11 +13,9 @@ async def save_snapshot(realm_id, auctions):
     values = {"realm_id": realm_id, "scanned_at": datetime.utcnow()}
     snapshot_id = await database.fetch_val(snapshot_query, values=values)
 
-    # Optional: clear old auctions for this snapshot (safe to re-snapshot same realm multiple times)
     delete_query = auction_snapshots.delete().where(auction_snapshots.c.snapshot_id == snapshot_id)
     await database.execute(delete_query)
 
-    # Prepare bulk insert data
     auction_values = [
         {
             "snapshot_id": snapshot_id,
@@ -32,7 +29,6 @@ async def save_snapshot(realm_id, auctions):
         for auction in auctions
     ]
 
-    # Bulk insert auctions using transaction for atomic write
     async with database.transaction():
         insert_query = auction_snapshots.insert()
         await database.execute_many(insert_query, auction_values)
