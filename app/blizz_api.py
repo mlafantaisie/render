@@ -1,6 +1,5 @@
 import httpx
 import os
-import requests
 from app.db import database
 from app.models import realms
 
@@ -16,6 +15,7 @@ async def get_access_token():
             data={"grant_type": "client_credentials"},
             auth=(BLIZZ_CLIENT_ID, BLIZZ_CLIENT_SECRET),
         )
+        response.raise_for_status()
         return response.json().get("access_token")
 
 async def fetch_auction_data(realm_id, access_token):
@@ -24,15 +24,15 @@ async def fetch_auction_data(realm_id, access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers, params=params)
+        response.raise_for_status()
         return response.json()
 
-def fetch_realm_index(token):
-    response = requests.get(
-        REALM_INDEX_URL,
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    response.raise_for_status()
-    return response.json()["realms"]
+async def fetch_realm_index(token):
+    headers = {"Authorization": f"Bearer {token}"}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(REALM_INDEX_URL, headers=headers)
+        response.raise_for_status()
+        return response.json()["realms"]
 
 async def upsert_realm(realm_id, realm_name):
     query = """
@@ -44,9 +44,8 @@ async def upsert_realm(realm_id, realm_name):
     await database.execute(query, values)
 
 async def update_realms_in_db():
-    token = get_access_token()
-    realms_list = fetch_realm_index(token)
+    token = await get_access_token()
+    realms_list = await fetch_realm_index(token)
 
     for realm in realms_list:
         await upsert_realm(realm["id"], realm["name"])
-
