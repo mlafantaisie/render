@@ -24,7 +24,7 @@ async def get_current_user(request: Request):
 
 async def require_admin(request: Request):
     user = request.session.get("user")
-    if not user or user.get("username") != "admin":  # Replace 'admin' with your actual admin username if different
+    if not user or user.get("username") != "garguscrayzon":  # Replace 'admin' with your actual admin username if different
         raise HTTPException(status_code=401, detail="Admin access required")
     return user
 
