@@ -34,7 +34,7 @@ def fetch_realm_index(token):
     response.raise_for_status()
     return response.json()["realms"]
 
-async def update_realm(realm_id, realm_name):
+async def upsert_realm(realm_id, realm_name):
     query = """
         INSERT INTO realms (realm_id, realm_name)
         VALUES (:realm_id, :realm_name)
