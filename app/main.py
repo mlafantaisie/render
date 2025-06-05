@@ -116,3 +116,15 @@ async def update_tables(request: Request, user: dict = Depends(require_admin)):
 async def update_realms_route(user: dict = Depends(require_admin)):
     await update_realms_in_db()
     return {"status": "Realms updated successfully."}
+
+@app.get("/snapshot_form", response_class=HTMLResponse)
+async def snapshot_form(request: Request):
+    query = "SELECT realm_id, realm_name FROM realms ORDER BY realm_name"
+    rows = await database.fetch_all(query)
+    realms = [dict(row) for row in rows]
+
+    return templates.TemplateResponse("snapshot_form.html", {
+        "request": request,
+        "realms": realms
+    })
+
