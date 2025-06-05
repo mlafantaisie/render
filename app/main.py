@@ -11,6 +11,7 @@ from app.db import database, engine, metadata
 from app import models
 from app.snapshots import take_snapshot
 from app.utils import format_price
+from app.pagination import get_pagination_window
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
@@ -72,13 +73,16 @@ async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
     total_count = await database.fetch_val(count_query, values={"snapshot_id": snapshot.id})
     total_pages = (total_count + page_size - 1) // page_size
 
+    pagination = get_pagination_window(page, total_pages)
+    
     return templates.TemplateResponse("realm.html", {
         "request": request,
         "realm_id": realm_id,
         "snapshot": dict(snapshot),
         "auctions": auctions,
         "page": page,
-        "total_pages": total_pages
+        "total_pages": total_pages,
+        "pagination": pagination
     })
 
 @app.get("/snapshots", response_class=HTMLResponse)
