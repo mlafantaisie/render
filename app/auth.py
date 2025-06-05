@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, Depends
+from fastapi import APIRouter, Request, Form, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from app.models import users
 from app.db import database
@@ -15,6 +15,18 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 async def get_user(username: str):
     query = users.select().where(users.c.username == username)
     return await database.fetch_one(query)
+
+async def get_current_user(request: Request):
+    user = request.session.get("user")
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return user
+
+async def require_admin(request: Request):
+    user = request.session.get("user")
+    if not user or user.get("username") != "admin":  # Replace 'admin' with your actual admin username if different
+        raise HTTPException(status_code=401, detail="Admin access required")
+    return user
 
 @router.get("/login", response_class=HTMLResponse)
 async def login_form(request: Request):
