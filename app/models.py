@@ -1,5 +1,5 @@
 from app.db import metadata
-from sqlalchemy import Table, Column, Integer, String, Float, DateTime, BigInteger, ForeignKey, Index
+from sqlalchemy import Table, Column, Integer, String, Float, DateTime, BigInteger, ForeignKey, Index, UniqueConstraint
 from datetime import datetime
 
 users = Table(
