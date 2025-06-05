@@ -21,7 +21,9 @@ auction_snapshots = Table(
     Column("unit_price", BigInteger, nullable=False),
     Column("buyout", BigInteger, nullable=True),
     Column("time_left", String, nullable=True),
+    UniqueConstraint("snapshot_id", "auction_id", name="uq_snapshot_auction")  # ADD THIS
 )
+
 
 snapshot_sessions = Table(
     "snapshot_sessions",
