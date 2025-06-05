@@ -33,19 +33,3 @@ async def fetch_realm_index(token):
         response = await client.get(REALM_INDEX_URL, headers=headers)
         response.raise_for_status()
         return response.json()["realms"]
-
-async def upsert_realm(realm_id, realm_name):
-    query = """
-        INSERT INTO realms (realm_id, realm_name)
-        VALUES (:realm_id, :realm_name)
-        ON CONFLICT (realm_id) DO UPDATE SET realm_name = :realm_name
-    """
-    values = {"realm_id": realm_id, "realm_name": realm_name}
-    await database.execute(query, values)
-
-async def update_realms_in_db():
-    token = await get_access_token()
-    realms_list = await fetch_realm_index(token)
-
-    for realm in realms_list:
-        await upsert_realm(realm["id"], realm["name"])
