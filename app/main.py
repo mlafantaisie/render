@@ -100,3 +100,8 @@ async def snapshots(request: Request):
 async def snapshot_post(request: Request, realm_id: int = Form(...)):
     await take_snapshot(realm_id)
     return HTMLResponse(f"Snapshot taken for realm {realm_id}", status_code=200)
+
+@app.get("/update_tables")
+async def update_tables(request: Request):
+    metadata.create_all(engine)
+    return {"status": "Tables updated successfully."}
