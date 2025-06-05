@@ -10,6 +10,7 @@ from app.auth import router as auth_router
 from app.db import database, engine, metadata
 from app import models
 from app.snapshots import take_snapshot
+from app.utils import format_price
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
@@ -23,6 +24,7 @@ app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 templates = Jinja2Templates(directory="app/templates")
+templates.env.filters['format_price'] = format_price
 
 app.include_router(auth_router)
 
