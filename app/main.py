@@ -64,17 +64,18 @@ async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
         values={"snapshot_id": snapshot.id, "limit": page_size, "offset": offset}
     )
 
-    # Get total count to calculate total pages (optional for UI)
-    count_query = """
-        SELECT COUNT(*) FROM auction_snapshots WHERE snapshot_id = :snapshot_id
-    """
+    # Convert auctions to list of dicts
+    auctions = [dict(row) for row in auctions]
+
+    # Total count for pagination
+    count_query = "SELECT COUNT(*) FROM auction_snapshots WHERE snapshot_id = :snapshot_id"
     total_count = await database.fetch_val(count_query, values={"snapshot_id": snapshot.id})
     total_pages = (total_count + page_size - 1) // page_size
 
     return templates.TemplateResponse("realm.html", {
         "request": request,
         "realm_id": realm_id,
-        "snapshot": snapshot,
+        "snapshot": dict(snapshot),
         "auctions": auctions,
         "page": page,
         "total_pages": total_pages
