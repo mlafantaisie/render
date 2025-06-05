@@ -9,9 +9,10 @@ from app.db import database, engine, metadata
 from app import models
 from app.snapshots import take_snapshot
 
+SECRET_KEY = os.getenv("SESSION_SECRET")
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.add_middleware(SessionMiddleware, secret_key="your_secret_key")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 templates = Jinja2Templates(directory="app/templates")
 
 app.include_router(auth_router)
