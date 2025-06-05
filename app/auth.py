@@ -4,13 +4,13 @@ from app.models import users
 from app.db import database
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
-import hashlib
+import bcrypt
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-def fake_hash_password(password: str):
-    return hashlib.sha256(password.encode()).hexdigest()
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 async def get_user(username: str):
     query = users.select().where(users.c.username == username)
@@ -23,7 +23,7 @@ async def login_form(request: Request):
 @router.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
     user = await get_user(username)
-    if not user or user["password"] != fake_hash_password(password):
+    if not user or not verify_password(password, user["password"]):
         return RedirectResponse("/login", status_code=303)
     request.session["user"] = dict(user)
     return RedirectResponse("/dashboard", status_code=303)
