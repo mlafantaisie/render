@@ -6,6 +6,17 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+  <div class="pagination">
+    {% if page > 1 %}
+        <a href="?page={{ page - 1 }}">Previous</a>
+    {% endif %}
+
+    Page {{ page }} of {{ total_pages }}
+
+    {% if page < total_pages %}
+        <a href="?page={{ page + 1 }}">Next</a>
+    {% endif %}
+  </div>
   <h2>Realm {{ realm_id }} — Snapshot from {{ snapshot.scanned_at }}</h2>
   <table>
     <tr><th>Item ID</th><th>Quantity</th><th>Unit Price</th><th>Buyout</th><th>Time Left</th></tr>
