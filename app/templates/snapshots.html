@@ -6,11 +6,11 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h1>Realms with Snapshots</h1>
+  <h1>Realm List</h1>
   <ul>
       {% for realm in realms %}
           <li>
-              Realm {{ realm.realm_id }} (last scanned at {{ realm.scanned_at }})
+              Realm {{ realm.realm_name }} (last scanned at {{ realm.scanned_at }})
               <a href="/realm/{{ realm.realm_id }}">View</a>
           </li>
       {% endfor %}
