@@ -102,7 +102,6 @@ async def snapshots(request: Request):
 
     return templates.TemplateResponse("snapshots.html", {"request": request, "realms": realms})
 
-# New route to take a snapshot manually
 @app.post("/snapshot")
 async def snapshot_post(request: Request, realm_id: int = Form(...)):
     await take_snapshot(realm_id)
@@ -110,6 +109,8 @@ async def snapshot_post(request: Request, realm_id: int = Form(...)):
 
 @app.get("/update_tables")
 async def update_tables(request: Request, user: dict = Depends(require_admin)):
+    metadata.create_all(engine)
+    return {"status": "Tables updated successfully."}
 
 @app.get("/update_realms")
 async def update_realms_route(user: dict = Depends(require_admin)):
