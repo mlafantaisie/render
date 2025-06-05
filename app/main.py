@@ -13,6 +13,7 @@ from app.snapshots import take_snapshot
 from app.utils import format_price
 from app.pagination import get_pagination_window
 from app.auth import require_admin
+from app.blizz_realms import update_realms_in_db
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
@@ -104,6 +105,11 @@ async def snapshot_post(request: Request, realm_id: int = Form(...)):
 
 @app.get("/update_tables")
 async def update_tables(request: Request, user: dict = Depends(require_admin)):
+
+@app.get("/update_realms")
+async def update_realms_route(user: dict = Depends(require_admin)):
+    await update_realms_in_db()
+    return {"status": "Realms updated successfully."}
     metadata.create_all(engine)
     return {"status": "Tables updated successfully."}
 
