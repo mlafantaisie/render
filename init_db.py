@@ -1,7 +1,9 @@
-from app.db import metadata, engine, database
+from app.db import metadata, engine
 from app import models
 
-# Now models.py has loaded all tables into shared metadata
-metadata.create_all(engine)
+def initialize_database():
+    print("Starting database initialization...")
+    metadata.create_all(engine)
+    print("Database initialized successfully.")
 
-print("Database initialized successfully.")
+initialize_database()
