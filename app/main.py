@@ -40,7 +40,7 @@ async def dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
 @app.get("/realm/{realm_id}", response_class=HTMLResponse)
-async def realm_snapshots(request: Request, realm_id: int):
+async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
     query = """
         SELECT id, scanned_at FROM snapshot_sessions 
         WHERE realm_id = :realm_id ORDER BY scanned_at DESC LIMIT 1
@@ -49,17 +49,35 @@ async def realm_snapshots(request: Request, realm_id: int):
     if not snapshot:
         return HTMLResponse("No snapshots found", status_code=404)
 
+    # Pagination setup
+    page_size = 100
+    offset = (page - 1) * page_size
+
     auction_query = """
         SELECT * FROM auction_snapshots
         WHERE snapshot_id = :snapshot_id
+        ORDER BY id
+        LIMIT :limit OFFSET :offset
     """
-    auctions = await database.fetch_all(auction_query, values={"snapshot_id": snapshot.id})
-    
+    auctions = await database.fetch_all(
+        auction_query,
+        values={"snapshot_id": snapshot.id, "limit": page_size, "offset": offset}
+    )
+
+    # Get total count to calculate total pages (optional for UI)
+    count_query = """
+        SELECT COUNT(*) FROM auction_snapshots WHERE snapshot_id = :snapshot_id
+    """
+    total_count = await database.fetch_val(count_query, values={"snapshot_id": snapshot.id})
+    total_pages = (total_count + page_size - 1) // page_size
+
     return templates.TemplateResponse("realm.html", {
         "request": request,
         "realm_id": realm_id,
         "snapshot": snapshot,
-        "auctions": auctions
+        "auctions": auctions,
+        "page": page,
+        "total_pages": total_pages
     })
 
 @app.get("/snapshots", response_class=HTMLResponse)
