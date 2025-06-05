@@ -116,6 +116,3 @@ async def update_tables(request: Request, user: dict = Depends(require_admin)):
 async def update_realms_route(user: dict = Depends(require_admin)):
     await update_realms_in_db()
     return {"status": "Realms updated successfully."}
-    metadata.create_all(engine)
-    return {"status": "Tables updated successfully."}
-
