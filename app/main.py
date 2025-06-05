@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.templating import Jinja2Templates
+from contextlib import asynccontextmanager
 
 from app.auth import router as auth_router
 from app.db import database, engine, metadata
@@ -10,20 +11,19 @@ from app import models
 from app.snapshots import take_snapshot
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await database.connect()
+    yield
+    await database.disconnect()
+
+app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 templates = Jinja2Templates(directory="app/templates")
 
 app.include_router(auth_router)
-
-@app.on_event("startup")
-async def startup():
-    await database.connect()
-
-@app.on_event("shutdown")
-async def shutdown():
-    await database.disconnect()
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
