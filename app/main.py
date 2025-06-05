@@ -12,6 +12,7 @@ from app import models
 from app.snapshots import take_snapshot
 from app.utils import format_price
 from app.pagination import get_pagination_window
+from app.auth import require_admin
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
@@ -102,6 +103,7 @@ async def snapshot_post(request: Request, realm_id: int = Form(...)):
     return HTMLResponse(f"Snapshot taken for realm {realm_id}", status_code=200)
 
 @app.get("/update_tables")
-async def update_tables(request: Request):
+async def update_tables(request: Request, user: dict = Depends(require_admin)):
     metadata.create_all(engine)
     return {"status": "Tables updated successfully."}
+
