@@ -27,7 +27,7 @@ snapshot_sessions = Table(
     "snapshot_sessions",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("realm_id", Integer, nullable=False),
+    Column("realm_id", Integer, nullable=False, unique=True),
     Column("scanned_at", DateTime, default=datetime.utcnow),
 )
 
