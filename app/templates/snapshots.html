@@ -8,11 +8,12 @@
 <body>
   <h2>Available Realm Snapshots</h2>
   <ul>
-  {% for realm in realms %}
-    <li>
-      <a href="/realm/{{ realm.realm_id }}">Realm {{ realm.realm_id }}</a> ({{ realm.count }} snapshots)
-    </li>
-  {% endfor %}
-  </ul>
+    {% for realm in realms %}
+        <li>
+            Realm {{ realm.realm_id }} ({{ realm.count }} snapshots)
+            <a href="/realm/{{ realm.realm_id }}">View</a>
+        </li>
+    {% endfor %}
+</ul>
 </body>
 </html>
