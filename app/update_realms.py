@@ -53,12 +53,11 @@ async def update_realms_in_db():
     for realm_entry in connected_realms:
         connected_realm_url = realm_entry["href"]
         connected_realm_data = await fetch_connected_realm_detail(connected_realm_url, token)
-
+    
         connected_realm_id = connected_realm_data["id"]
-        # Take the first realm name in the list
         first_realm = connected_realm_data["realms"][0]
-        realm_name = first_realm["name"]
-
+        realm_name = first_realm["name"]["en_US"]
+    
         await upsert_realm(connected_realm_id, realm_name)
         print(f"Updated connected realm {connected_realm_id}: {realm_name}")
 
