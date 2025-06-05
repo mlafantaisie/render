@@ -1,0 +1,11 @@
+<h1>Take Snapshot</h1>
+
+<form method="post" action="/snapshot">
+    <label for="realm_id">Select Realm:</label>
+    <select name="realm_id" id="realm_id">
+        {% for realm in realms %}
+            <option value="{{ realm.realm_id }}">{{ realm.realm_name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Take Snapshot</button>
+</form>
