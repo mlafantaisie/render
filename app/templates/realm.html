@@ -13,8 +13,8 @@
       <tr>
         <td>{{ auction.item_id }}</td>
         <td>{{ auction.quantity }}</td>
-        <td>{{ auction.unit_price / 10000 }}g</td>
-        <td>{{ auction.buyout / 10000 }}g</td>
+        <td>{{ auction.unit_price|format_price }}</td>
+        <td>{{ auction.buyout|format_price }}</td>
         <td>{{ auction.time_left }}</td>
       </tr>
     {% endfor %}
