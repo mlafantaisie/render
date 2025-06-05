@@ -2,7 +2,6 @@ from app.db import database
 from app.models import users, auction_snapshots, snapshot_sessions
 from app.blizz_api import get_access_token, fetch_auction_data
 
-# Your existing save_snapshot stays
 async def save_snapshot(realm_id, auctions):
     # Create snapshot session
     snapshot_query = snapshot_sessions.insert().values(
@@ -10,25 +9,23 @@ async def save_snapshot(realm_id, auctions):
     )
     snapshot_id = await database.execute(snapshot_query)
 
-    # Insert auction records
-    query_list = []
+    # Prepare bulk insert data
+    auction_values = []
     for auction in auctions:
-        query = auction_snapshots.insert().values(
-            snapshot_id=snapshot_id,
-            auction_id=auction["id"],
-            item_id=auction["item"]["id"],
-            quantity=auction["quantity"],
-            unit_price=auction.get("unit_price", 0),
-            buyout=auction.get("buyout", 0),
-            time_left=auction.get("time_left", "")
-        )
-        query_list.append(query)
+        auction_values.append({
+            "snapshot_id": snapshot_id,
+            "auction_id": auction["id"],
+            "item_id": auction["item"]["id"],
+            "quantity": auction["quantity"],
+            "unit_price": auction.get("unit_price", 0),
+            "buyout": auction.get("buyout", 0),
+            "time_left": auction.get("time_left", "")
+        })
 
     async with database.transaction():
-        for query in query_list:
-            await database.execute(query)
+        query = auction_snapshots.insert()
+        await database.execute_many(query, auction_values)
 
-# This is the orchestration function you will call from main.py
 async def take_snapshot(realm_id):
     token = await get_access_token()
     data = await fetch_auction_data(realm_id, token)
