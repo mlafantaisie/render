@@ -4,14 +4,21 @@ from app.models import users, auction_snapshots, snapshot_sessions
 from app.blizz_api import get_access_token, fetch_auction_data
 
 async def save_snapshot(realm_id, auctions):
-    # Create snapshot session
-    snapshot_query = snapshot_sessions.insert().values(
-        realm_id=realm_id,
-        scanned_at=datetime.utcnow()
-    )
-    snapshot_id = await database.execute(snapshot_query)
+    # Upsert into snapshot_sessions (overwrite any previous session for realm)
+    query = """
+        INSERT INTO snapshot_sessions (realm_id, scanned_at)
+        VALUES (:realm_id, :scanned_at)
+        ON CONFLICT (realm_id) DO UPDATE SET scanned_at = :scanned_at
+        RETURNING id
+    """
+    values = {"realm_id": realm_id, "scanned_at": datetime.utcnow()}
+    snapshot_id = await database.fetch_val(query, values=values)
 
-    # Prepare bulk insert data
+    # Delete existing auctions for this snapshot
+    delete_query = auction_snapshots.delete().where(auction_snapshots.c.snapshot_id == snapshot_id)
+    await database.execute(delete_query)
+
+    # Insert new auctions (bulk insert strongly recommended here!)
     auction_values = []
     for auction in auctions:
         auction_values.append({
