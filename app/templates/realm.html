@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h2>Realm {{ realm_id }} — Snapshot from {{ snapshot.scanned_at }}</h2>
+  <h1>Realm {{ realm_id }} — Snapshot from {{ snapshot.scanned_at }}</h1>
   <div class="pagination">
     {% if page > 1 %}
         <a href="?page={{ page - 1 }}">Previous</a>
