@@ -8,16 +8,17 @@
 <body>
   <h1>Realm {{ realm_id }} — Snapshot from {{ snapshot.scanned_at }}</h1>
   <div class="pagination">
-    {% if page > 1 %}
-        <a href="?page={{ page - 1 }}">Previous</a>
-    {% endif %}
-
-    Page {{ page }} of {{ total_pages }}
-
-    {% if page < total_pages %}
-        <a href="?page={{ page + 1 }}">Next</a>
-    {% endif %}
+    {% for p in pagination %}
+        {% if p == "..." %}
+            <span>...</span>
+        {% elif p == page %}
+            <strong>{{ p }}</strong>
+        {% else %}
+            <a href="?page={{ p }}">{{ p }}</a>
+        {% endif %}
+    {% endfor %}
   </div>
+
   <table>
     <tr><th>Item ID</th><th>Quantity</th><th>Unit Price</th><th>Buyout</th><th>Time Left</th></tr>
     {% for auction in auctions %}
