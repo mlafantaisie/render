@@ -6,15 +6,19 @@
 <table>
     <tr>
         <th>Item Name</th>
-        <th>Lowest Price</th>
-        <th>Highest Price</th>
+        <th>Buy Low (Realm)</th>
+        <th>Low Price</th>
+        <th>Sell High (Realm)</th>
+        <th>High Price</th>
         <th>Profit Spread</th>
     </tr>
     {% for item in opportunities %}
     <tr>
         <td>{{ item.item_name }}</td>
-        <td>{{ item.lowest_price | format_price }}</td>
-        <td>{{ item.highest_price | format_price }}</td>
+        <td>{{ item.low_realm }}</td>
+        <td>{{ item.low_price | format_price }}</td>
+        <td>{{ item.high_realm }}</td>
+        <td>{{ item.high_price | format_price }}</td>
         <td>{{ item.price_diff | format_price }}</td>
     </tr>
     {% endfor %}
