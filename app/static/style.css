@@ -80,3 +80,12 @@ nav a:hover {
 .content {
     margin: 20px;
 }
+
+.alert.success {
+  padding: 10px;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
