@@ -80,7 +80,11 @@ async def fetch_missing_items():
         try:
             name = await fetch_item_name(item_id, token)  # <-- Use simplified name fetcher
             if name:
-                insert_query = "INSERT INTO items (id, name) VALUES (:id, :name) ON CONFLICT DO NOTHING"
+                insert_query = """
+                    INSERT INTO items (id, name)
+                    VALUES (:id, :name)
+                    ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name
+                """
                 await database.execute(insert_query, {"id": item_id, "name": name})
                 print(f"Cached item {item_id}: {name}")
             else:
