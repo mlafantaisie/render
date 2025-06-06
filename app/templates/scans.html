@@ -2,7 +2,10 @@
 {% block title %}Scans{% endblock %}
 {% block content %}
     <h1>Realm List</h1>
-  <ul>
+    {% if message %}
+        <div class="alert success">{{ message }}</div>
+    {% endif %}  
+    <ul>
       {% for realm in realms %}
           <li>
               Realm {{ realm.realm_name }} | Last scanned at: {{ realm.scanned_at|format_datetime }}
