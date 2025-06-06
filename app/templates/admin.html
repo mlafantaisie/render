@@ -3,13 +3,14 @@
 {% block content %}
     <h1>Admin Commands</h1>
 
-    <button onclick="runCommand('/admin/update_items')">Update Item Cache</button>
-    <button onclick="fetchItemCache()">Item Cache Summary</button>
     <button onclick="runCommand('/admin/clear_realms')">Clear Realms</button>
     <button onclick="runCommand('/admin/clear_scans')">Clear Scans</button>
     <button onclick="runCommand('/admin/update_realms')">Update Realms</button>
-    <button onclick="runCommand('/admin/update_tables')">Update Tables</button>
-
+    <button onclick="runCommand('/admin/update_tables')">Update Tables</button>    
+    <button onclick="runCommand('/admin/update_items')">Update Item Cache</button>
+    <button onclick="fetchItemCache()">Item Cache Summary</button>
+    <button onclick="runCommand('/admin/fetch_missing_items')">Fetch Missing Items</button>
+    
     <div id="itemCacheResult" style="margin-top: 10px; font-weight: bold;"></div>
     
     <h2>Execute Raw SQL</h2>
