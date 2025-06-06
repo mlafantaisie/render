@@ -5,7 +5,7 @@
   <ul>
       {% for realm in realms %}
           <li>
-              Realm {{ realm.realm_name }} (last scanned at {{ realm.scanned_at|strftime('%Y-%m-%d %H:%M:%S') }})
+              Realm {{ realm.realm_name }} {{ realm.scanned_at|format_datetime }} }})
               <a href="/realm/{{ realm.realm_id }}">View</a>
           </li>
       {% endfor %}
