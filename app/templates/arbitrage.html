@@ -3,6 +3,22 @@
 {% block content %}
 <h1>Top Arbitrage Opportunities</h1>
 
+<form method="get" action="/arbitrage">
+    <label>Show Top:</label>
+    <select name="limit">
+        <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+        <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+        <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
+    </select>
+
+    <label>Min Spread (g):</label>
+    <input type="number" name="min_spread" value="{{ min_spread }}" min="0">
+
+    <button type="submit">Filter</button>
+</form>
+
+<br>
+
 <table>
     <tr>
         <th>Item Name</th>
