@@ -52,9 +52,9 @@ async def fetch_auction_data(realm_id, token):
         response.raise_for_status()
         return response.json()
 
-# Fetch item data
+# Fetch item name only
 async def fetch_item_name(item_id, token):
-    url = f"https://us.api.blizzard.com/data/wow/item/{item_id}?namespace=static-us&locale=en_US"
+    url = f"{BASE_URL}/data/wow/item/{item_id}?namespace=static-us&locale=en_US"
     headers = {"Authorization": f"Bearer {token}"}
     
     async with httpx.AsyncClient() as client:
@@ -65,3 +65,13 @@ async def fetch_item_name(item_id, token):
         else:
             print(f"Failed to fetch item {item_id}: {response.status_code}")
             return None
+
+# Fetch item detail
+async def fetch_item_detail(item_id, token):
+    url = f"{BASE_URL}/data/wow/item/{item_id}?namespace={NAMESPACE}&locale={LOCALE}"
+    headers = {"Authorization": f"Bearer {token}"}
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
