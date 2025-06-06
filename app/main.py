@@ -104,13 +104,8 @@ async def snapshots(request: Request):
 
     return templates.TemplateResponse("scans.html", {"request": request, "realms": realms})
 
-@app.post("/scans")
-async def snapshot_post(request: Request, realm_id: int = Form(...)):
-    await take_snapshot(realm_id)
-    return HTMLResponse(f"Scan taken for realm {realm_id}", status_code=200)
-
 @app.get("/scan_form", response_class=HTMLResponse)
-async def snapshot_form(request: Request):
+async def scan_form(request: Request):
     query = "SELECT realm_id, realm_name FROM realms ORDER BY realm_name"
     rows = await database.fetch_all(query)
     realms = [dict(row) for row in rows]
@@ -119,3 +114,8 @@ async def snapshot_form(request: Request):
         "request": request,
         "realms": realms
     })
+
+@app.post("/scan")
+async def scan_post(request: Request, realm_id: int = Form(...)):
+    await take_snapshot(realm_id)
+    return HTMLResponse(f"Scan completed for realm {realm_id}", status_code=200)
