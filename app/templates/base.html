@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}WoW AH Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/snapshots">Snapshots</a>
+        <a href="/snapshot_form">Take Snapshot</a>
+        <a href="/admin">Admin</a>
+      <a href="/login" style="float:right;">Login</a>  
+      <a href="/logout" style="float:right;">Logout</a>
+    </nav>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
