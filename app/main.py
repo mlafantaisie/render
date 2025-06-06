@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from app.auth import router as auth_router
 from app.db import database, engine, metadata
 from app import models
-from app.snapshots import take_snapshot
+from app.scans import take_snapshot
 from app.utils import format_price
 from app.pagination import get_pagination_window
 from app.auth import require_admin
@@ -102,12 +102,12 @@ async def snapshots(request: Request):
     # Convert to dicts for clean Jinja access
     realms = [dict(row) for row in rows]
 
-    return templates.TemplateResponse("snapshots.html", {"request": request, "realms": realms})
+    return templates.TemplateResponse("scans.html", {"request": request, "realms": realms})
 
 @app.post("/scan")
 async def snapshot_post(request: Request, realm_id: int = Form(...)):
     await take_snapshot(realm_id)
-    return HTMLResponse(f"Snapshot taken for realm {realm_id}", status_code=200)
+    return HTMLResponse(f"Scan taken for realm {realm_id}", status_code=200)
 
 @app.get("/scan_form", response_class=HTMLResponse)
 async def snapshot_form(request: Request):
@@ -115,7 +115,7 @@ async def snapshot_form(request: Request):
     rows = await database.fetch_all(query)
     realms = [dict(row) for row in rows]
 
-    return templates.TemplateResponse("snapshot_form.html", {
+    return templates.TemplateResponse("scan_form.html", {
         "request": request,
         "realms": realms
     })
