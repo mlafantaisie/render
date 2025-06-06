@@ -1,37 +1,6 @@
-import os
-import httpx
 from app.db import database
 from app.models import realms
-
-BLIZZ_CLIENT_ID = os.getenv("BLIZZ_CLIENT_ID")
-BLIZZ_CLIENT_SECRET = os.getenv("BLIZZ_CLIENT_SECRET")
-
-TOKEN_URL = "https://oauth.battle.net/token"
-CONNECTED_REALM_INDEX_URL = "https://us.api.blizzard.com/data/wow/connected-realm/index?namespace=dynamic-us&locale=en_US"
-
-async def get_access_token():
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            TOKEN_URL,
-            data={"grant_type": "client_credentials"},
-            auth=(BLIZZ_CLIENT_ID, BLIZZ_CLIENT_SECRET),
-        )
-        response.raise_for_status()
-        return response.json().get("access_token")
-
-async def fetch_connected_realm_index(token):
-    headers = {"Authorization": f"Bearer {token}"}
-    async with httpx.AsyncClient() as client:
-        response = await client.get(CONNECTED_REALM_INDEX_URL, headers=headers)
-        response.raise_for_status()
-        return response.json()["connected_realms"]
-
-async def fetch_connected_realm_detail(url, token):
-    headers = {"Authorization": f"Bearer {token}"}
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, headers=headers)
-        response.raise_for_status()
-        return response.json()
+from app.blizz_api import get_access_token, fetch_connected_realm_index, fetch_connected_realm_detail
 
 async def upsert_realm(realm_id, realm_name):
     query = """
@@ -52,7 +21,6 @@ async def update_realms_in_db():
             connected_realm_data = await fetch_connected_realm_detail(connected_realm_url, token)
             connected_realm_id = connected_realm_data["id"]
 
-            # Collect all realm names from the connected realm group
             realm_names = [r["name"]["en_US"] for r in connected_realm_data["realms"]]
             realm_name = " / ".join(realm_names)
 
