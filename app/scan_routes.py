@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from datetime import datetime
 
@@ -43,6 +43,20 @@ async def save_snapshot(realm_id, auctions):
 async def take_snapshot(realm_id):
     token = await get_access_token()
 
+    try:
+        data = await fetch_auction_data(realm_id, token)
+    except Exception as e:
+        print(f"Failed to fetch auction data: {e}")
+        raise  # Bubble up to fail the scan
+
+    auctions = data.get('auctions', [])
+
+    if not auctions:
+        print(f"No auctions found for realm_id {realm_id}")
+        # Optional: You could raise an error here too, if you want scans to only succeed if data is found
+
+    await save_snapshot(realm_id, auctions)
+
 @router.get("/scans", response_class=HTMLResponse)
 async def scans(request: Request, scanned_realm_id: int = None):
     query = """
@@ -56,7 +70,7 @@ async def scans(request: Request, scanned_realm_id: int = None):
 
     message = None
     if scanned_realm_id:
-        # Lookup realm name for prettier message
+        # Lookup realm name
         name_query = "SELECT realm_name FROM realms WHERE realm_id = :realm_id"
         realm_name = await database.fetch_val(name_query, values={"realm_id": scanned_realm_id})
         message = f"Scan completed for realm {realm_name}."
@@ -80,5 +94,9 @@ async def scan_form(request: Request):
 
 @router.post("/scan")
 async def scan_post(request: Request, realm_id: int = Form(...)):
-    await take_snapshot(realm_id)
-    return HTMLResponse(f"Scan completed for realm {realm_id}", status_code=200)
+    try:
+        await take_snapshot(realm_id)
+        return RedirectResponse(url=f"/scans?scanned_realm_id={realm_id}", status_code=303)
+    except Exception as e:
+        print(f"Scan failed: {e}")
+        return HTMLResponse(f"Failed to scan realm {realm_id}: {e}", status_code=500)
