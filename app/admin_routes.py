@@ -7,6 +7,7 @@ from app.auth_routes import require_admin
 from app.update_realms import update_realms_in_db
 from app.templates_env import templates
 from app.cache_items import update_item_cache
+from app.blizz_api import get_access_token, fetch_item_detail
 
 router = APIRouter(
     prefix="/admin",
@@ -59,6 +60,38 @@ async def update_realms_route():
 async def update_tables():
     metadata.create_all(engine)
     return {"status": "Tables updated"}
+
+@router.post("/fetch_missing_items")
+async def fetch_missing_items():
+    # Find item_ids we have in auction_snapshots that aren't cached yet
+    query = """
+        SELECT DISTINCT a.item_id
+        FROM auction_snapshots a
+        LEFT JOIN items i ON a.item_id = i.id
+        WHERE i.id IS NULL
+        LIMIT 1000
+    """
+    rows = await database.fetch_all(query)
+    missing_items = [row['item_id'] for row in rows]
+
+    if not missing_items:
+        return {"status": "No missing items found."}
+
+    token = await get_access_token()
+
+    for item_id in missing_items:
+        try:
+            item_data = await fetch_item_detail(item_id, token)
+            name = item_data["name"]["en_US"]
+
+            insert_query = "INSERT INTO items (id, name) VALUES (:id, :name) ON CONFLICT DO NOTHING"
+            await database.execute(insert_query, {"id": item_id, "name": name})
+            print(f"Cached item {item_id}: {name}")
+
+        except Exception as e:
+            print(f"Failed to fetch item {item_id}: {e}")
+
+    return {"status": f"Cached {len(missing_items)} missing items."}
 
 @router.post("/execute_sql")
 async def execute_sql(query: str = Form(...)):
