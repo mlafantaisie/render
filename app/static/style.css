@@ -61,3 +61,22 @@ button, input[type="submit"] {
 button:hover, input[type="submit"]:hover {
     background-color: #ffd633;
 }
+
+nav {
+    background-color: #333;
+    padding: 10px;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.content {
+    margin: 20px;
+}
