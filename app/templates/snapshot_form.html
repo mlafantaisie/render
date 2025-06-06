@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Snapshots</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Snapshots{% endblock %}
+{% block content %}
     <h1>Take Snapshot</h1>
 
     <form method="post" action="/snapshot">
@@ -17,8 +12,4 @@
         </select>
         <button type="submit">Take Snapshot</button>
     </form>
-</body>
-</html>
-
-
-
+{% endblock %}
