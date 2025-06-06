@@ -6,15 +6,14 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.templating import Jinja2Templates
 from contextlib import asynccontextmanager
 
-from app.auth import router as auth_router
+from app.auth_routes import router as auth_router, require_admin
+from app.admin_routes import router as admin_router
 from app.db import database, engine, metadata
 from app import models
 from app.scans import take_snapshot
 from app.utils import format_price
 from app.pagination import get_pagination_window
-from app.auth import require_admin
 from app.update_realms import update_realms_in_db
-from app.admin_routes import router as admin_router
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
@@ -32,6 +31,7 @@ templates.env.filters['format_price'] = format_price
 
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(scan_router)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -88,34 +88,3 @@ async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
         "total_pages": total_pages,
         "pagination": pagination
     })
-
-@app.get("/scans", response_class=HTMLResponse)
-async def snapshots(request: Request):
-    query = """
-        SELECT s.realm_id, s.scanned_at, r.realm_name
-        FROM snapshot_sessions s
-        JOIN realms r ON s.realm_id = r.realm_id
-        ORDER BY r.realm_name ASC
-    """
-    rows = await database.fetch_all(query)
-
-    # Convert to dicts for clean Jinja access
-    realms = [dict(row) for row in rows]
-
-    return templates.TemplateResponse("scans.html", {"request": request, "realms": realms})
-
-@app.get("/scan_form", response_class=HTMLResponse)
-async def scan_form(request: Request):
-    query = "SELECT realm_id, realm_name FROM realms ORDER BY realm_name"
-    rows = await database.fetch_all(query)
-    realms = [dict(row) for row in rows]
-
-    return templates.TemplateResponse("scan_form.html", {
-        "request": request,
-        "realms": realms
-    })
-
-@app.post("/scan")
-async def scan_post(request: Request, realm_id: int = Form(...)):
-    await take_snapshot(realm_id)
-    return HTMLResponse(f"Scan completed for realm {realm_id}", status_code=200)
