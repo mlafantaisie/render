@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>WoW Auction Tracker</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}WoW Auction Tracker{% endblock %}
+{% block content %}
     <h1>WoW Auction House Tracker</h1>
     
     <p>Welcome to your cross-realm gold farming dashboard!</p>
-    
-    <h2>Actions:</h2>
-    <ul>
-        <li><a href="/snapshot_form">Take Auction Snapshot</a></li>
-        <li><a href="/snapshots">View Auction Snapshots</a></li>
-        <li><a href="/login">Login</a></li>
-        <li><a href="/logout">Logout</a></li>
-    </ul>
-</body>
-</html>
+{% endblock %}
