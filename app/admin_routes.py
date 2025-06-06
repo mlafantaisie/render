@@ -34,6 +34,22 @@ async def update_items():
     await update_item_cache()
     return {"status": "Item cache updated"}
 
+@router.get("/item_cache_summary")
+async def item_cache_summary():
+    # How many distinct item_ids we have in auction_snapshots
+    auction_items_query = "SELECT COUNT(DISTINCT item_id) FROM auction_snapshots"
+    auction_items = await database.fetch_val(auction_items_query)
+
+    # How many items we've cached
+    cached_items_query = "SELECT COUNT(*) FROM items"
+    cached_items = await database.fetch_val(cached_items_query)
+
+    return {
+        "auction_items": auction_items,
+        "cached_items": cached_items,
+        "missing": auction_items - cached_items
+    }
+
 @router.post("/update_realms")
 async def update_realms_route():
     await update_realms_in_db()
