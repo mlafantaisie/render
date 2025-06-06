@@ -11,9 +11,14 @@
 
     <script>
         async function runCommand(endpoint) {
-            const res = await fetch(endpoint, { method: 'POST' });
-            const data = await res.json();
-            document.getElementById('result').innerText = data.status;
+            try {
+                const res = await fetch(endpoint, { method: 'POST' });
+                if (!res.ok) throw new Error("Request failed");
+                const data = await res.json();
+                document.getElementById('result').innerText = data.status;
+            } catch (err) {
+                document.getElementById('result').innerText = "Error running command!";
+            }
         }
     </script>
 {% endblock %}
