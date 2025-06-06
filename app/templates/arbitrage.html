@@ -1,42 +1,38 @@
 {% extends "base.html" %}
-{% block title %}Arbitrage Opportunities{% endblock %}
+{% block title %}Arbitrage{% endblock %}
 {% block content %}
-<h1>Top Arbitrage Opportunities</h1>
+<h1>Arbitrage Scanner</h1>
 
-<form method="get" action="/arbitrage">
-    <label>Show Top:</label>
-    <select name="limit">
-        <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
-        <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
-        <option value="100" {% if limit == 100 %}selected{% endif %}>100</option>
-    </select>
-
-    <label>Min Spread (g):</label>
-    <input type="number" name="min_spread" value="{{ min_spread }}" min="0">
-
-    <button type="submit">Filter</button>
+<form id="arbitrageForm">
+    <label>Limit: <input type="number" name="limit" value="10" /></label>
+    <label>Min Spread: <input type="number" name="min_spread" value="0" /></label>
+    <button type="submit">Find Arbitrage</button>
 </form>
 
-<br>
+<div id="results" style="margin-top:20px;"></div>
 
-<table>
-    <tr>
-        <th>Item Name</th>
-        <th>Buy Low (Realm)</th>
-        <th>Low Price</th>
-        <th>Sell High (Realm)</th>
-        <th>High Price</th>
-        <th>Profit Spread</th>
-    </tr>
-    {% for item in opportunities %}
-    <tr>
-        <td>{{ item.item_name }}</td>
-        <td>{{ item.low_realm }}</td>
-        <td>{{ item.low_price | format_price }}</td>
-        <td>{{ item.high_realm }}</td>
-        <td>{{ item.high_price | format_price }}</td>
-        <td>{{ item.price_diff | format_price }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<script>
+document.getElementById('arbitrageForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+
+    const res = await fetch('/arbitrage_query', { method: 'POST', body: formData });
+    const data = await res.json();
+
+    let html = "<table><tr><th>Item</th><th>Low Realm</th><th>Low Price</th><th>High Realm</th><th>High Price</th><th>Profit</th></tr>";
+    for (const row of data) {
+        html += `<tr>
+            <td>${row.item_name}</td>
+            <td>${row.low_realm}</td>
+            <td>${(row.low_price/10000).toFixed(2)}g</td>
+            <td>${row.high_realm}</td>
+            <td>${(row.high_price/10000).toFixed(2)}g</td>
+            <td>${((row.high_price-row.low_price)/10000).toFixed(2)}g</td>
+        </tr>`;
+    }
+    html += "</table>";
+    document.getElementById('results').innerHTML = html;
+});
+</script>
+
 {% endblock %}
