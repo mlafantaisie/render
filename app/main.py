@@ -27,7 +27,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
 templates = Jinja2Templates(directory="app/templates")
+
+def format_datetime(value, format="%Y-%m-%d %H:%M:%S"):
+    if isinstance(value, datetime):
+        return value.strftime(format)
+    return value  # fallback
+
+templates.env.filters['format_datetime'] = format_datetime
 templates.env.filters['format_price'] = format_price
 
 app.include_router(auth_router)
