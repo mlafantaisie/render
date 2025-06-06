@@ -16,6 +16,7 @@ from app.scan_routes import take_snapshot
 from app.utils import format_price
 from app.pagination import get_pagination_window
 from app.update_realms import update_realms_in_db
+from app.templates_env import templates
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
@@ -28,16 +29,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-
-templates = Jinja2Templates(directory="app/templates")
-
-def format_datetime(value, format="%Y-%m-%d %H:%M:%S"):
-    if isinstance(value, datetime):
-        return value.strftime(format)
-    return value  # fallback
-
-templates.env.filters['format_datetime'] = format_datetime
-templates.env.filters['format_price'] = format_price
 
 app.include_router(auth_router)
 app.include_router(admin_router)
