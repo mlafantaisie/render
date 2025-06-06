@@ -47,3 +47,11 @@ realms = Table(
     Column("realm_id", Integer, unique=True, nullable=False),  # Connected Realm ID
     Column("realm_name", String, nullable=False),
 )
+
+# Items table
+items = Table(
+    "items",
+    metadata,
+    Column("id", Integer, primary_key=True),  # item_id from Blizzard
+    Column("name", String, nullable=False),
+)
