@@ -6,9 +6,9 @@ from datetime import datetime
 from app.db import database
 from app.models import auction_snapshots, snapshot_sessions
 from app.blizz_api import get_access_token, fetch_auction_data
+from app.templates_env import templates
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
 
 async def save_snapshot(realm_id, auctions):
     snapshot_query = """
