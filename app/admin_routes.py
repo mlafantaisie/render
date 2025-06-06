@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from app.db import database, metadata, engine
 from app.auth import require_admin
 from app.update_realms import update_realms_in_db
+from app.templates_env import templates
 
 router = APIRouter(
     prefix="/admin",
