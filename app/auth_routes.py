@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Request, Form, Depends, HTTPException
 from fastapi.responses import RedirectResponse
-from app.models import users
-from app.db import database
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 import bcrypt
 
+from app.models import users
+from app.db import database
+from app.templates_env import templates
+
 router = APIRouter()
-templates = Jinja2Templates(directory="app/templates")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
