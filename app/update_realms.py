@@ -47,10 +47,17 @@ async def update_realms_in_db():
     connected_realms = await fetch_connected_realm_index(token)
 
     for realm_entry in connected_realms:
-        connected_realm_url = realm_entry["href"]
-        connected_realm_data = await fetch_connected_realm_detail(connected_realm_url, token)
-        connected_realm_id = connected_realm_data["id"]
-        first_realm = connected_realm_data["realms"][0]
-        realm_name = first_realm["name"]["en_US"]
-        await upsert_realm(connected_realm_id, realm_name)
-        print(f"Updated connected realm {connected_realm_id}: {realm_name}")
+        try:
+            connected_realm_url = realm_entry["href"]
+            connected_realm_data = await fetch_connected_realm_detail(connected_realm_url, token)
+            connected_realm_id = connected_realm_data["id"]
+
+            # Collect all realm names from the connected realm group
+            realm_names = [r["name"]["en_US"] for r in connected_realm_data["realms"]]
+            realm_name = " / ".join(realm_names)
+
+            await upsert_realm(connected_realm_id, realm_name)
+            print(f"Updated connected realm {connected_realm_id}: {realm_name}")
+
+        except Exception as e:
+            print(f"Failed to update connected realm entry: {e}")
