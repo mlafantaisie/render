@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Arbitrage Opportunities{% endblock %}
+{% block content %}
+<h1>Top Arbitrage Opportunities</h1>
+
+<table>
+    <tr>
+        <th>Item Name</th>
+        <th>Lowest Price</th>
+        <th>Highest Price</th>
+        <th>Profit Spread</th>
+    </tr>
+    {% for item in opportunities %}
+    <tr>
+        <td>{{ item.item_name }}</td>
+        <td>{{ item.lowest_price | format_price }}</td>
+        <td>{{ item.highest_price | format_price }}</td>
+        <td>{{ item.price_diff | format_price }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
