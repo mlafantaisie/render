@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-    <style>
-        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
     <h1>Admin Commands</h1>
 
     <button onclick="runCommand('/admin/clear_realms')">Clear Realms</button>
@@ -22,5 +16,4 @@
             document.getElementById('result').innerText = data.status;
         }
     </script>
-</body>
-</html>
+{% endblock %}
