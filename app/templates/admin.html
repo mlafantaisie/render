@@ -4,6 +4,7 @@
     <h1>Admin Commands</h1>
 
     <button onclick="runCommand('/admin/clear_realms')">Clear Realms</button>
+    <button onclick="runCommand('/admin/clear_scans')">Clear Scans</button>
     <button onclick="runCommand('/admin/update_realms')">Update Realms</button>
     <button onclick="runCommand('/admin/update_tables')">Update Tables</button>
 
@@ -11,14 +12,9 @@
 
     <script>
         async function runCommand(endpoint) {
-            try {
-                const res = await fetch(endpoint, { method: 'POST' });
-                if (!res.ok) throw new Error("Request failed");
-                const data = await res.json();
-                document.getElementById('result').innerText = data.status;
-            } catch (err) {
-                document.getElementById('result').innerText = "Error running command!";
-            }
+            const res = await fetch(endpoint, { method: 'POST' });
+            const data = await res.json();
+            document.getElementById('result').innerText = data.status;
         }
     </script>
 {% endblock %}
