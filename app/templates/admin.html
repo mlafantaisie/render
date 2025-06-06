@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Admin Commands</h1>
+
+    <button onclick="runCommand('/admin/clear_realms')">Clear Realms</button>
+    <button onclick="runCommand('/admin/update_realms')">Update Realms</button>
+    <button onclick="runCommand('/admin/update_tables')">Update Tables</button>
+
+    <div id="result" style="margin-top:20px; font-weight:bold;"></div>
+
+    <script>
+        async function runCommand(endpoint) {
+            const res = await fetch(endpoint, { method: 'POST' });
+            const data = await res.json();
+            document.getElementById('result').innerText = data.status;
+        }
+    </script>
+</body>
+</html>
