@@ -15,7 +15,7 @@ async def arbitrage(
     limit: int = Query(10, description="Number of items to show"),
     min_spread: int = Query(0, description="Minimum gold spread required")
 ):
-    query = f"""
+    query = """
         WITH latest_snapshots AS (
             SELECT s.realm_id, s.id AS snapshot_id
             FROM snapshot_sessions s
@@ -38,7 +38,7 @@ async def arbitrage(
             JOIN items i ON a.item_id = i.id
         ),
         min_prices AS (
-            SELECT item_id, item_name, realm_name AS low_realm, unit_price AS low_price
+            SELECT ip.item_id, ip.item_name, ip.realm_name AS low_realm, ip.unit_price AS low_price
             FROM item_prices ip
             JOIN (
                 SELECT item_id, MIN(unit_price) AS min_price
@@ -47,7 +47,7 @@ async def arbitrage(
             ) minp ON ip.item_id = minp.item_id AND ip.unit_price = minp.min_price
         ),
         max_prices AS (
-            SELECT item_id, item_name, realm_name AS high_realm, unit_price AS high_price
+            SELECT ip.item_id, ip.item_name, ip.realm_name AS high_realm, ip.unit_price AS high_price
             FROM item_prices ip
             JOIN (
                 SELECT item_id, MAX(unit_price) AS max_price
