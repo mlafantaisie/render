@@ -37,23 +37,25 @@ async def arbitrage(
             JOIN realms r ON s.realm_id = r.realm_id
             JOIN items i ON a.item_id = i.id
         ),
+        ranked_min AS (
+            SELECT item_id, item_name, realm_name AS low_realm, unit_price AS low_price,
+                ROW_NUMBER() OVER (PARTITION BY item_id ORDER BY unit_price ASC, realm_name ASC) AS rn
+            FROM item_prices
+        ),
+        ranked_max AS (
+            SELECT item_id, item_name, realm_name AS high_realm, unit_price AS high_price,
+                ROW_NUMBER() OVER (PARTITION BY item_id ORDER BY unit_price DESC, realm_name ASC) AS rn
+            FROM item_prices
+        ),
         min_prices AS (
-            SELECT ip.item_id, ip.item_name, ip.realm_name AS low_realm, ip.unit_price AS low_price
-            FROM item_prices ip
-            JOIN (
-                SELECT item_id, MIN(unit_price) AS min_price
-                FROM item_prices
-                GROUP BY item_id
-            ) minp ON ip.item_id = minp.item_id AND ip.unit_price = minp.min_price
+            SELECT item_id, item_name, low_realm, low_price
+            FROM ranked_min
+            WHERE rn = 1
         ),
         max_prices AS (
-            SELECT ip.item_id, ip.item_name, ip.realm_name AS high_realm, ip.unit_price AS high_price
-            FROM item_prices ip
-            JOIN (
-                SELECT item_id, MAX(unit_price) AS max_price
-                FROM item_prices
-                GROUP BY item_id
-            ) maxp ON ip.item_id = maxp.item_id AND ip.unit_price = maxp.max_price
+            SELECT item_id, item_name, high_realm, high_price
+            FROM ranked_max
+            WHERE rn = 1
         ),
         combined AS (
             SELECT 
