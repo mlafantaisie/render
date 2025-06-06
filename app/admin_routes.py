@@ -6,6 +6,7 @@ from app.db import database, metadata, engine
 from app.auth_routes import require_admin
 from app.update_realms import update_realms_in_db
 from app.templates_env import templates
+from app.cache_items import update_item_cache
 
 router = APIRouter(
     prefix="/admin",
@@ -27,6 +28,11 @@ async def clear_scans():
     await database.execute("DELETE FROM auction_snapshots;")
     await database.execute("DELETE FROM snapshot_sessions;")
     return {"status": "Scans cleared"}
+
+@router.post("/update_items")
+async def update_items():
+    await update_item_cache()
+    return {"status": "Item cache updated"}
 
 @router.post("/update_realms")
 async def update_realms_route():
