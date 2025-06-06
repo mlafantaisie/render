@@ -11,8 +11,11 @@
         <a href="/scans">Scans</a>
         <a href="/scan_form">Scan Realm</a>
         <a href="/admin">Admin</a>
-      <a href="/login" style="float:right;">Login</a>  
-      <a href="/logout" style="float:right;">Logout</a>
+        {% if request.session.user %}
+            <a href="/logout" style="float:right;">Logout</a>
+        {% else %}
+            <a href="/login" style="float:right;">Login</a>
+        {% endif %}
     </nav>
 
     <div class="content">
