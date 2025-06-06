@@ -42,6 +42,25 @@ async def dashboard(request: Request):
         return HTMLResponse("Unauthorized", status_code=401)
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_page(request: Request, user: dict = Depends(require_admin)):
+    return templates.TemplateResponse("admin.html", {"request": request})
+
+@app.get("/admin/update_tables")
+async def update_tables(request: Request, user: dict = Depends(require_admin)):
+    metadata.create_all(engine)
+    return {"status": "Tables updated successfully."}
+
+@app.get("/admin/update_realms")
+async def update_realms_route(user: dict = Depends(require_admin)):
+    await update_realms_in_db()
+    return {"status": "Realms updated successfully."}
+
+@app.get("/admin/clear_realms")
+async def clear_realms(user: dict = Depends(require_admin)):
+    await database.execute("TRUNCATE TABLE realms;")
+    return {"status": "Realms cleared."}
+
 @app.get("/realm/{realm_id}", response_class=HTMLResponse)
 async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
     query = """
@@ -107,16 +126,6 @@ async def snapshot_post(request: Request, realm_id: int = Form(...)):
     await take_snapshot(realm_id)
     return HTMLResponse(f"Snapshot taken for realm {realm_id}", status_code=200)
 
-@app.get("/update_tables")
-async def update_tables(request: Request, user: dict = Depends(require_admin)):
-    metadata.create_all(engine)
-    return {"status": "Tables updated successfully."}
-
-@app.get("/update_realms")
-async def update_realms_route(user: dict = Depends(require_admin)):
-    await update_realms_in_db()
-    return {"status": "Realms updated successfully."}
-
 @app.get("/snapshot_form", response_class=HTMLResponse)
 async def snapshot_form(request: Request):
     query = "SELECT realm_id, realm_name FROM realms ORDER BY realm_name"
@@ -127,8 +136,3 @@ async def snapshot_form(request: Request):
         "request": request,
         "realms": realms
     })
-
-@app.get("/admin/clear_realms")
-async def clear_realms(user: dict = Depends(require_admin)):
-    await database.execute("TRUNCATE TABLE realms;")
-    return {"status": "Realms cleared."}
