@@ -1,17 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-  <h2>Dashboard</h2>
-  <form action="/snapshot" method="post">
-    <input name="realm_id" type="number" placeholder="Realm ID">
-    <button type="submit">Take Snapshot</button>
-  </form>
-
-  <p><a href="/snapshots">View Snapshots</a></p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <h1>Welcome to the Dashboard!</h1>
+{% endblock %}
