@@ -77,7 +77,8 @@ async def save_snapshot(realm_id):
         RETURNING id
     """
     values = {"realm_id": realm_id, "scanned_at": datetime.utcnow()}
-    snapshot_id = await database.fetch_val(snapshot_query, values=values)
+    snapshot_id_row = await database.fetch_one(snapshot_query, values=values)
+    snapshot_id = snapshot_id_row['id']
 
     # 2️⃣ Delete any existing auctions for this snapshot immediately
     delete_query = auction_snapshots.delete().where(auction_snapshots.c.snapshot_id == snapshot_id)
