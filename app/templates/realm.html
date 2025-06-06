@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Realm {{ realm_id }} Snapshot</title>
-  <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-  <h1>Realm {{ realm_id }} — Snapshot from {{ snapshot.scanned_at }}</h1>
+{% extends "base.html" %}
+{% block title %}Realm {{ realm_id }} Snapshot{% endblock %}
+{% block content %}
+    <h1>Realm {{ realm_id }} — Snapshot from {{ snapshot.scanned_at }}</h1>
   <div class="pagination">
     {% for p in pagination %}
         {% if p == "..." %}
@@ -31,5 +26,4 @@
       </tr>
     {% endfor %}
   </table>
-</body>
-</html>
+{% endblock %}
