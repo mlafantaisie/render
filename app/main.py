@@ -128,3 +128,7 @@ async def snapshot_form(request: Request):
         "realms": realms
     })
 
+@app.get("/admin/clear_realms")
+async def clear_realms(user: dict = Depends(require_admin)):
+    await database.execute("TRUNCATE TABLE realms;")
+    return {"status": "Realms cleared."}
