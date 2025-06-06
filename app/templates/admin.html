@@ -8,6 +8,12 @@
     <button onclick="runCommand('/admin/update_realms')">Update Realms</button>
     <button onclick="runCommand('/admin/update_tables')">Update Tables</button>
 
+    <h2>Execute Raw SQL</h2>
+    <form id="sqlForm">
+        <textarea id="sqlQuery" rows="4" cols="80" placeholder="Enter SQL query here"></textarea><br>
+        <button type="submit">Execute SQL</button>
+    </form>
+
     <div id="result" style="margin-top:20px; font-weight:bold;"></div>
 
     <script>
@@ -16,5 +22,16 @@
             const data = await res.json();
             document.getElementById('result').innerText = data.status;
         }
+
+        document.getElementById('sqlForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('sqlQuery').value;
+            const formData = new FormData();
+            formData.append('query', query);
+
+            const res = await fetch('/admin/execute_sql', { method: 'POST', body: formData });
+            const data = await res.json();
+            document.getElementById('result').innerText = data.status;
+        });
     </script>
 {% endblock %}
