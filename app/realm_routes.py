@@ -28,9 +28,11 @@ async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
 
     # Fetch paginated auctions
     auction_query = """
-        SELECT * FROM auction_snapshots
-        WHERE snapshot_id = :snapshot_id
-        ORDER BY id
+        SELECT a.id, a.item_id, i.name as item_name, a.quantity, a.unit_price, a.buyout, a.time_left
+        FROM auction_snapshots a
+        LEFT JOIN items i ON a.item_id = i.id
+        WHERE a.snapshot_id = :snapshot_id
+        ORDER BY a.id
         LIMIT :limit OFFSET :offset
     """
     auctions = await database.fetch_all(
