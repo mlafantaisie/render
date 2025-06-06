@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Query
 from fastapi.responses import HTMLResponse
 
 from app.db import database
@@ -10,8 +10,12 @@ router = APIRouter()
 templates.env.filters['format_price'] = format_price
 
 @router.get("/arbitrage", response_class=HTMLResponse)
-async def arbitrage(request: Request):
-    query = """
+async def arbitrage(
+    request: Request,
+    limit: int = Query(10, description="Number of items to show"),
+    min_spread: int = Query(0, description="Minimum gold spread required")
+):
+    query = f"""
         WITH latest_snapshots AS (
             SELECT s.realm_id, s.id AS snapshot_id
             FROM snapshot_sessions s
@@ -41,7 +45,6 @@ async def arbitrage(request: Request):
                 FROM item_prices
                 GROUP BY item_id
             ) minp ON ip.item_id = minp.item_id AND ip.unit_price = minp.min_price
-            LIMIT 1
         ),
         max_prices AS (
             SELECT item_id, item_name, realm_name AS high_realm, unit_price AS high_price
@@ -51,7 +54,6 @@ async def arbitrage(request: Request):
                 FROM item_prices
                 GROUP BY item_id
             ) maxp ON ip.item_id = maxp.item_id AND ip.unit_price = maxp.max_price
-            LIMIT 1
         ),
         combined AS (
             SELECT 
@@ -68,14 +70,17 @@ async def arbitrage(request: Request):
         )
         SELECT *
         FROM combined
+        WHERE price_diff >= :min_spread
         ORDER BY price_diff DESC
-        LIMIT 10;
+        LIMIT :limit;
     """
 
-    rows = await database.fetch_all(query)
+    rows = await database.fetch_all(query, values={"min_spread": min_spread, "limit": limit})
     opportunities = [dict(row) for row in rows]
 
     return templates.TemplateResponse("arbitrage.html", {
         "request": request,
-        "opportunities": opportunities
+        "opportunities": opportunities,
+        "limit": limit,
+        "min_spread": min_spread
     })
