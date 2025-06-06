@@ -2,6 +2,7 @@ from app.db import database
 from app.models import realms
 from app.blizz_api import get_access_token, fetch_connected_realm_index, fetch_connected_realm_detail
 
+# Upsert realms into your DB
 async def upsert_realm(realm_id, realm_name):
     query = """
         INSERT INTO realms (realm_id, realm_name)
@@ -11,6 +12,7 @@ async def upsert_realm(realm_id, realm_name):
     values = {"realm_id": realm_id, "realm_name": realm_name}
     await database.execute(query, values)
 
+# Master function to update all connected realms into DB
 async def update_realms_in_db():
     token = await get_access_token()
     connected_realms = await fetch_connected_realm_index(token)
@@ -21,6 +23,7 @@ async def update_realms_in_db():
             connected_realm_data = await fetch_connected_realm_detail(connected_realm_url, token)
             connected_realm_id = connected_realm_data["id"]
 
+            # Collect all realm names for the connected realm group
             realm_names = [r["name"]["en_US"] for r in connected_realm_data["realms"]]
             realm_name = " / ".join(realm_names)
 
