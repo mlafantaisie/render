@@ -7,7 +7,7 @@ from app.auth_routes import require_admin
 from app.update_realms import update_realms_in_db
 from app.templates_env import templates
 from app.cache_items import update_item_cache
-from app.blizz_api import get_access_token, fetch_item_detail
+from app.blizz_api import get_access_token, fetch_item_name  # <-- Correct import
 
 router = APIRouter(
     prefix="/admin",
@@ -37,11 +37,9 @@ async def update_items():
 
 @router.get("/item_cache_summary")
 async def item_cache_summary():
-    # How many distinct item_ids we have in auction_snapshots
     auction_items_query = "SELECT COUNT(DISTINCT item_id) FROM auction_snapshots"
     auction_items = await database.fetch_val(auction_items_query)
 
-    # How many items we've cached
     cached_items_query = "SELECT COUNT(*) FROM items"
     cached_items = await database.fetch_val(cached_items_query)
 
@@ -63,7 +61,6 @@ async def update_tables():
 
 @router.post("/fetch_missing_items")
 async def fetch_missing_items():
-    # Find item_ids we have in auction_snapshots that aren't cached yet
     query = """
         SELECT DISTINCT a.item_id
         FROM auction_snapshots a
@@ -81,13 +78,13 @@ async def fetch_missing_items():
 
     for item_id in missing_items:
         try:
-            item_data = await fetch_item_detail(item_id, token)
-            name = item_data["name"]["en_US"]
-
-            insert_query = "INSERT INTO items (id, name) VALUES (:id, :name) ON CONFLICT DO NOTHING"
-            await database.execute(insert_query, {"id": item_id, "name": name})
-            print(f"Cached item {item_id}: {name}")
-
+            name = await fetch_item_name(item_id, token)  # <-- Use simplified name fetcher
+            if name:
+                insert_query = "INSERT INTO items (id, name) VALUES (:id, :name) ON CONFLICT DO NOTHING"
+                await database.execute(insert_query, {"id": item_id, "name": name})
+                print(f"Cached item {item_id}: {name}")
+            else:
+                print(f"Name not found for item {item_id}")
         except Exception as e:
             print(f"Failed to fetch item {item_id}: {e}")
 
