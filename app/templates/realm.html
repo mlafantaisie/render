@@ -15,15 +15,22 @@
   </div>
 
   <table>
-    <tr><th>Item ID</th><th>Quantity</th><th>Unit Price</th><th>Buyout</th><th>Time Left</th></tr>
-    {% for auction in auctions %}
-      <tr>
-        <td>{{ auction.item_id }}</td>
-        <td>{{ auction.quantity }}</td>
-        <td>{{ auction.unit_price|format_price }}</td>
-        <td>{{ auction.buyout|format_price }}</td>
-        <td>{{ auction.time_left }}</td>
-      </tr>
-    {% endfor %}
-  </table>
+      <tr><th>Item</th><th>Quantity</th><th>Unit Price</th><th>Buyout</th><th>Time Left</th></tr>
+      {% for auction in auctions %}
+        <tr>
+          <td>
+            {% if auction.item_name %}
+                {{ auction.item_name }} ({{ auction.item_id }})
+            {% else %}
+                Item {{ auction.item_id }}
+            {% endif %}
+          </td>
+          <td>{{ auction.quantity }}</td>
+          <td>{{ auction.unit_price|format_price }}</td>
+          <td>{{ auction.buyout|format_price }}</td>
+          <td>{{ auction.time_left }}</td>
+        </tr>
+      {% endfor %}
+</table>
+
 {% endblock %}
