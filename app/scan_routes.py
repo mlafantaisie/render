@@ -61,11 +61,21 @@ async def scan_post(request: Request, background_tasks: BackgroundTasks, realm_i
         return HTMLResponse(f"Failed to scan realm {realm_id}: {e}", status_code=500)
 
 # Orchestrator function for full snapshot
-async def take_snapshot(realm_id: int):
+async def take_snapshot(realm_id):
+    print(f"Starting snapshot for realm {realm_id}")
     token = await get_access_token()
-    data = await fetch_auction_data(realm_id, token)
+
+    try:
+        data = await fetch_auction_data(realm_id, token)
+    except Exception as e:
+        print(f"Failed to fetch auction data: {e}")
+        raise
+
     auctions = data.get('auctions', [])
+    print(f"Fetched {len(auctions)} auctions for realm {realm_id}")
+
     await save_snapshot(realm_id, auctions)
+    print(f"Completed snapshot for realm {realm_id}")
 
 # Full snapshot saving logic (overwrite pattern)
 async def save_snapshot(realm_id, auctions):
