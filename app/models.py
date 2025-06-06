@@ -19,8 +19,9 @@ snapshot_sessions = Table(
     "snapshot_sessions",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("realm_id", Integer, nullable=False, unique=True),  # Unique realm snapshot
+    Column("realm_id", Integer, nullable=False),
     Column("scanned_at", DateTime, default=datetime.utcnow),
+    UniqueConstraint('realm_id', name='uq_realm_id')
 )
 
 # Auction snapshots table
