@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Snapshots{% endblock %}
+{% block title %}Auction Scans{% endblock %}
 {% block content %}
     <h1>Take Snapshot</h1>
 
-    <form method="post" action="/snapshot">
+    <form method="post" action="/scan">
         <label for="realm_id">Select Realm:</label>
         <select name="realm_id" id="realm_id">
             {% for realm in realms %}
                 <option value="{{ realm.realm_id }}">{{ realm.realm_name }}</option>
             {% endfor %}
         </select>
-        <button type="submit">Take Snapshot</button>
+        <button type="submit">Take Scan</button>
     </form>
 {% endblock %}
