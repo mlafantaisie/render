@@ -89,7 +89,7 @@ async def realm_snapshots(request: Request, realm_id: int, page: int = 1):
         "pagination": pagination
     })
 
-@app.get("/snapshots", response_class=HTMLResponse)
+@app.get("/scans", response_class=HTMLResponse)
 async def snapshots(request: Request):
     query = """
         SELECT s.realm_id, s.scanned_at, r.realm_name
@@ -104,12 +104,12 @@ async def snapshots(request: Request):
 
     return templates.TemplateResponse("snapshots.html", {"request": request, "realms": realms})
 
-@app.post("/snapshot")
+@app.post("/scan")
 async def snapshot_post(request: Request, realm_id: int = Form(...)):
     await take_snapshot(realm_id)
     return HTMLResponse(f"Snapshot taken for realm {realm_id}", status_code=200)
 
-@app.get("/snapshot_form", response_class=HTMLResponse)
+@app.get("/scan_form", response_class=HTMLResponse)
 async def snapshot_form(request: Request):
     query = "SELECT realm_id, realm_name FROM realms ORDER BY realm_name"
     rows = await database.fetch_all(query)
