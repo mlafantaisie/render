@@ -44,7 +44,7 @@ async def take_snapshot(realm_id):
     token = await get_access_token()
 
 @router.get("/scans", response_class=HTMLResponse)
-async def scans(request: Request):
+async def scans(request: Request, scanned_realm_id: int = None):
     query = """
         SELECT s.realm_id, s.scanned_at, r.realm_name
         FROM snapshot_sessions s
@@ -54,7 +54,18 @@ async def scans(request: Request):
     rows = await database.fetch_all(query)
     realms = [dict(row) for row in rows]
 
-    return templates.TemplateResponse("scans.html", {"request": request, "realms": realms})
+    message = None
+    if scanned_realm_id:
+        # Lookup realm name for prettier message
+        name_query = "SELECT realm_name FROM realms WHERE realm_id = :realm_id"
+        realm_name = await database.fetch_val(name_query, values={"realm_id": scanned_realm_id})
+        message = f"Scan completed for realm {realm_name}."
+
+    return templates.TemplateResponse("scans.html", {
+        "request": request,
+        "realms": realms,
+        "message": message
+    })
 
 @router.get("/scan_form", response_class=HTMLResponse)
 async def scan_form(request: Request):
