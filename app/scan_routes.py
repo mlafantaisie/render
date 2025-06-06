@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, BackgroundTasks
 from fastapi.responses import HTMLResponse, RedirectResponse
 from datetime import datetime
 
@@ -52,9 +52,9 @@ async def scan_form(request: Request):
 
 # Initiate scan for selected realm
 @router.post("/scan")
-async def scan_post(request: Request, realm_id: int = Form(...)):
+async def scan_post(request: Request, background_tasks: BackgroundTasks, realm_id: int = Form(...)):
     try:
-        await take_snapshot(realm_id)
+        background_tasks.add_task(take_snapshot, realm_id)
         return RedirectResponse(url=f"/scans?scanned_realm_id={realm_id}", status_code=303)
     except Exception as e:
         print(f"Scan failed: {e}")
