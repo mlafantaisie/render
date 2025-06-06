@@ -8,9 +8,10 @@ from contextlib import asynccontextmanager
 
 from app.auth_routes import router as auth_router, require_admin
 from app.admin_routes import router as admin_router
+from app.scan_routes import router as scan_router
 from app.db import database, engine, metadata
 from app import models
-from app.scans import take_snapshot
+from app.scan_routes import take_snapshot
 from app.utils import format_price
 from app.pagination import get_pagination_window
 from app.update_realms import update_realms_in_db
