@@ -46,17 +46,17 @@ async def dashboard(request: Request):
 async def admin_page(request: Request, user: dict = Depends(require_admin)):
     return templates.TemplateResponse("admin.html", {"request": request})
 
-@app.get("/admin/update_tables")
+@app.post("/admin/update_tables")
 async def update_tables(request: Request, user: dict = Depends(require_admin)):
     metadata.create_all(engine)
     return {"status": "Tables updated successfully."}
 
-@app.get("/admin/update_realms")
+@app.post("/admin/update_realms")
 async def update_realms_route(user: dict = Depends(require_admin)):
     await update_realms_in_db()
     return {"status": "Realms updated successfully."}
 
-@app.get("/admin/clear_realms")
+@app.post("/admin/clear_realms")
 async def clear_realms(user: dict = Depends(require_admin)):
     await database.execute("TRUNCATE TABLE realms;")
     return {"status": "Realms cleared."}
