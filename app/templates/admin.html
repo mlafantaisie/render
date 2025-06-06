@@ -9,7 +9,7 @@
     <button onclick="runCommand('/admin/update_tables')">Update Tables</button>    
     <button onclick="runCommand('/admin/update_items')">Update Item Cache</button>
     <button onclick="fetchItemCache()">Item Cache Summary</button>
-    <button onclick="runCommand('/admin/fetch_missing_items')">Fetch Missing Items</button>
+    <button onclick="fetchMissingItems()">Fetch Missing Items</button>
     
     <div id="itemCacheResult" style="margin-top: 10px; font-weight: bold;"></div>
     
@@ -33,6 +33,13 @@
             const res = await fetch(endpoint, { method: 'POST' });
             const data = await res.json();
             document.getElementById('result').innerText = data.status;
+        }
+
+        async function fetchMissingItems() {
+            const res = await fetch('/admin/fetch_missing_items', { method: 'POST' });
+            const data = await res.json();
+            document.getElementById('result').innerText = data.status;
+            await fetchItemCache();  // Refresh cache summary after fetching missing items
         }
 
         document.getElementById('sqlForm').addEventListener('submit', async (e) => {
