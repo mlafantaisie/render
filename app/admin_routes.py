@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -37,3 +37,11 @@ async def update_realms_route():
 async def update_tables():
     metadata.create_all(engine)
     return {"status": "Tables updated"}
+
+@router.post("/execute_sql")
+async def execute_sql(query: str = Form(...)):
+    try:
+        await database.execute(query)
+        return {"status": "Query executed successfully."}
+    except Exception as e:
+        return {"status": f"Error: {str(e)}"}
