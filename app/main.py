@@ -10,6 +10,7 @@ from datetime import datetime
 from app.auth_routes import router as auth_router, require_admin
 from app.admin_routes import router as admin_router
 from app.scan_routes import router as scan_router
+from app.realm_routes import router as realm_router
 from app.db import database, engine, metadata
 from app import models
 from app.scan_routes import take_snapshot
@@ -33,6 +34,7 @@ app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(scan_router)
+app.include_router(realm_router)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
