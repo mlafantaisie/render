@@ -7,7 +7,6 @@ from app.utils import format_price
 
 router = APIRouter()
 
-# Register Jinja filter for price formatting
 templates.env.filters['format_price'] = format_price
 
 @router.get("/arbitrage", response_class=HTMLResponse)
@@ -34,19 +33,41 @@ async def arbitrage(request: Request):
             JOIN realms r ON s.realm_id = r.realm_id
             JOIN items i ON a.item_id = i.id
         ),
-        item_stats AS (
+        min_prices AS (
+            SELECT item_id, item_name, realm_name AS low_realm, unit_price AS low_price
+            FROM item_prices ip
+            JOIN (
+                SELECT item_id, MIN(unit_price) AS min_price
+                FROM item_prices
+                GROUP BY item_id
+            ) minp ON ip.item_id = minp.item_id AND ip.unit_price = minp.min_price
+            LIMIT 1
+        ),
+        max_prices AS (
+            SELECT item_id, item_name, realm_name AS high_realm, unit_price AS high_price
+            FROM item_prices ip
+            JOIN (
+                SELECT item_id, MAX(unit_price) AS max_price
+                FROM item_prices
+                GROUP BY item_id
+            ) maxp ON ip.item_id = maxp.item_id AND ip.unit_price = maxp.max_price
+            LIMIT 1
+        ),
+        combined AS (
             SELECT 
-                item_id,
-                item_name,
-                MIN(unit_price) AS lowest_price,
-                MAX(unit_price) AS highest_price,
-                MAX(unit_price) - MIN(unit_price) AS price_diff
-            FROM item_prices
-            GROUP BY item_id, item_name
-            HAVING MAX(unit_price) > MIN(unit_price)
+                min_prices.item_id,
+                min_prices.item_name,
+                min_prices.low_realm,
+                min_prices.low_price,
+                max_prices.high_realm,
+                max_prices.high_price,
+                max_prices.high_price - min_prices.low_price AS price_diff
+            FROM min_prices
+            JOIN max_prices ON min_prices.item_id = max_prices.item_id
+            WHERE max_prices.high_price > min_prices.low_price
         )
-        SELECT item_id, item_name, lowest_price, highest_price, price_diff
-        FROM item_stats
+        SELECT *
+        FROM combined
         ORDER BY price_diff DESC
         LIMIT 10;
     """
