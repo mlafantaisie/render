@@ -14,6 +14,7 @@ from app.utils import format_price
 from app.pagination import get_pagination_window
 from app.auth import require_admin
 from app.update_realms import update_realms_in_db
+from app.admin import router as admin_router
 
 SECRET_KEY = os.getenv("SESSION_SECRET")
 
@@ -30,6 +31,7 @@ templates = Jinja2Templates(directory="app/templates")
 templates.env.filters['format_price'] = format_price
 
 app.include_router(auth_router)
+app.include_router(admin_router)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
