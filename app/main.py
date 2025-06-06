@@ -104,7 +104,7 @@ async def snapshots(request: Request):
 
     return templates.TemplateResponse("scans.html", {"request": request, "realms": realms})
 
-@app.post("/scan")
+@app.post("/scans")
 async def snapshot_post(request: Request, realm_id: int = Form(...)):
     await take_snapshot(realm_id)
     return HTMLResponse(f"Scan taken for realm {realm_id}", status_code=200)
